@@ -950,7 +950,7 @@ var SB_ANON='sb_publishable_xQyNxCTeVz4JbHciFpe7aQ_poiG7mZE';
 var RPC={'/api/verify':'g_verify','/api/login':'g_login','/api/register':'g_register',
          '/api/submit':'g_submit','/api/loot':'g_loot','/api/me':'g_me',
          '/api/aggregate':'g_aggregate','/api/drifting':'g_drifting','/api/rescue':'g_rescue',
-         '/api/announcements':'g_announcements','/api/state':'g_state'};
+         '/api/announcements':'g_announcements','/api/state':'g_state','/api/qbank':'g_qbank'};
 var TOKEN=new URLSearchParams(location.search).get('c')||'Js5O7SYjYM4';
 function api(path,body){
   return fetch(SB_URL+'/rest/v1/rpc/'+RPC[path],{method:'POST',
@@ -1199,6 +1199,30 @@ var DRIFTLOG=[
   '剛剛好像看到微笑大使在遠處比了個讚。'
 ];
 
+/* ---------- 雲端題庫與作答時長（Phase 3：題目不寫死，後端可編輯、儲存即生效） ---------- */
+var qbankLoaded=false;
+function qbankFetch(){
+  if(qbankLoaded)return;
+  api('/api/qbank',{}).then(function(res){
+    if(res.status!==200)return;
+    qbankLoaded=true;
+    (res.j.items||[]).forEach(function(it){
+      var p=it.payload||{};
+      if(it.slot==='meteor'&&p.questions&&p.questions.length)QS=p.questions;
+      if(it.slot==='link'&&p.pairs&&p.pairs.length)PAIRS=p.pairs;
+      if(it.slot==='chain'&&p.steps&&p.steps.length){CHAIN=p.steps;if(p.ends&&p.ends.length)CHAIN_END=p.ends;}
+      if(it.slot==='weather'&&p.acts&&p.acts.length)ACTS=p.acts;
+      if(it.slot==='flags'&&p.cards&&p.cards.length)FLAGS=p.cards;
+    });
+  }).catch(function(){});
+  api('/api/state',{}).then(function(res){
+    if(res.status!==200)return;
+    var t=(res.j&&res.j.timers)||{};
+    if(t.meteor>0)TLIMIT=t.meteor*1000;
+    if(t.link>0)MLIMIT=t.link*1000;
+  }).catch(function(){});
+}
+
 /* ---------- 狀態 ---------- */
 var state={sid:null,name:null,pick:null,nick:'',no:null,
            o2:2,parts:0,dex:{},srvStamps:[],round:0,drifting:false};
@@ -1378,6 +1402,7 @@ function renderCard(){
   $('go-round').textContent=n>=4?(feedbackDone()?'前往航行結算':'填寫航行回饋'):'出發航行（第 '+(n+1)+' 輪）';
   drawO2();
   annFetch();                         // 載入本班公告＋顯示訊號接收器
+  qbankFetch();                       // 載入雲端題庫與作答時長（一次）
 }
 $('redo').addEventListener('click',function(){
   try{localStorage.removeItem('glimmer2-sid')}catch(e){}

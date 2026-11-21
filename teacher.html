@@ -7,41 +7,74 @@
 <title>微光星系・艦橋（教師端）</title>
 <style>
 *{box-sizing:border-box}
-body{margin:0;background:#070A14;color:#E9E4D7;font-family:"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;line-height:1.6}
-.wrap{max-width:860px;margin:0 auto;padding:1.2rem 1rem 4rem}
-h1{font-size:1.5rem;letter-spacing:.3em;text-align:center;color:#F2EDE0;margin:.8rem 0 .2rem}
-.sub{text-align:center;color:#A9A694;font-size:.85rem;margin-bottom:1.2rem}
-.panel{background:rgba(8,11,24,.74);border:1px solid rgba(199,162,75,.28);border-radius:14px;padding:1rem 1.1rem;margin:.8rem 0}
-.panel h2{font-size:1.05rem;color:#C7A24B;letter-spacing:.15em;margin:.2rem 0 .6rem}
-.btn{display:inline-block;border:0;border-radius:999px;padding:.55rem 1.2rem;font:inherit;font-size:.95rem;font-weight:700;letter-spacing:.12em;color:#0C0F1C;background:#C7A24B;cursor:pointer;margin:.2rem .3rem .2rem 0}
+html,body{min-height:100%}
+body{margin:0;background:#070A14;color:#E9E4D7;font-family:"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;line-height:1.65}
+#space{position:fixed;inset:0;z-index:0}
+.wrap{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:1.2rem 1rem 5rem}
+h1{font-size:1.6rem;letter-spacing:.42em;text-align:center;color:#F2EDE0;margin:.9rem 0 .15rem;text-indent:.42em}
+.sub{text-align:center;color:#A9A694;font-size:.82rem;margin-bottom:1.1rem}
+.panel{background:rgba(8,11,24,.82);border:1px solid rgba(199,162,75,.3);border-radius:16px;padding:1.1rem 1.2rem;margin:.9rem 0;backdrop-filter:blur(4px)}
+.panel h2{font-size:1.02rem;color:#C7A24B;letter-spacing:.18em;margin:.1rem 0 .7rem}
+/* 導覽分頁 */
+.nav{display:flex;gap:.45rem;justify-content:center;flex-wrap:wrap;margin:.4rem 0 .2rem}
+.nav button{border:1px solid rgba(199,162,75,.4);background:rgba(8,11,24,.7);color:#A9A694;
+  border-radius:999px;padding:.55rem 1.25rem;font:inherit;font-size:.95rem;font-weight:700;
+  letter-spacing:.14em;cursor:pointer}
+.nav button.on{background:#C7A24B;color:#0C0F1C;border-color:#C7A24B}
+/* 按鈕 */
+.btn{display:inline-block;border:0;border-radius:999px;padding:.6rem 1.3rem;font:inherit;font-size:.93rem;font-weight:700;letter-spacing:.1em;color:#0C0F1C;background:#C7A24B;cursor:pointer;margin:.2rem .3rem .2rem 0}
 .btn:active{transform:translateY(1px)}
 .btn[disabled]{opacity:.35;cursor:default}
-.btn.ghost{background:transparent;color:#A9A694;border:1px solid rgba(199,162,75,.4)}
+.btn.ghost{background:transparent;color:#C8C3B2;border:1px solid rgba(199,162,75,.45)}
 .btn.on{background:#8FC79A;color:#07140B}
 .btn.danger{background:#B4544B;color:#fff}
-input.field,select.field{background:rgba(2,3,10,.8);border:1.5px solid rgba(199,162,75,.4);border-radius:10px;color:#F2EDE0;font:inherit;padding:.45rem .7rem;margin:.15rem .3rem .15rem 0}
-input.field:focus,select.field:focus{outline:none;border-color:#C7A24B}
-input.num{width:5.2rem;text-align:center}
-.msg{min-height:1.4em;font-size:.85rem;color:#A9A694;margin:.3rem 0}
+.btn.sm{padding:.35rem .85rem;font-size:.82rem}
+/* 欄位 */
+input.field,select.field,textarea.field{background:rgba(2,3,10,.82);border:1.5px solid rgba(199,162,75,.4);border-radius:10px;color:#F2EDE0;font:inherit;font-size:.95rem;padding:.5rem .7rem;margin:.15rem .3rem .15rem 0}
+input.field:focus,select.field:focus,textarea.field:focus{outline:none;border-color:#C7A24B}
+input.num{width:5.4rem;text-align:center}
+textarea.field{width:100%;resize:vertical}
+label.inl{font-size:.85rem;color:#A9A694;margin-right:.15rem;white-space:nowrap}
+.msg{min-height:1.3em;font-size:.85rem;color:#A9A694;margin:.35rem 0}
 .msg.err{color:#E08A7A}.msg.ok{color:#9CC4A0}
+/* 手風琴分區 */
+details.sec{border:1px solid rgba(199,162,75,.25);border-radius:12px;margin:.6rem 0;background:rgba(2,3,10,.35)}
+details.sec summary{cursor:pointer;list-style:none;padding:.75rem 1rem;font-weight:700;color:#E9E4D7;letter-spacing:.08em;display:flex;align-items:center;gap:.5rem}
+details.sec summary::-webkit-details-marker{display:none}
+details.sec summary::after{content:'▾';margin-left:auto;color:#C7A24B;transition:transform .2s}
+details.sec:not([open]) summary::after{transform:rotate(-90deg)}
+details.sec .bd{padding:.2rem 1rem 1rem}
+.ico{width:1.6em;text-align:center}
+/* 表格與列 */
 table{width:100%;border-collapse:collapse;font-size:.85rem;margin:.4rem 0}
 th,td{border-bottom:1px solid rgba(199,162,75,.18);padding:.35rem .4rem;text-align:left;vertical-align:top}
 th{color:#C7A24B;font-weight:700}
-.tag{display:inline-block;border:1px solid rgba(199,162,75,.45);border-radius:999px;padding:.05rem .6rem;font-size:.78rem;color:#C7A24B;margin:.1rem .2rem .1rem 0}
-.cls-row{display:flex;flex-wrap:wrap;align-items:center;gap:.4rem;border-bottom:1px solid rgba(199,162,75,.15);padding:.5rem 0;cursor:pointer}
-.cls-row b{font-size:1.05rem;min-width:5.5rem}
+.tag{display:inline-block;border:1px solid rgba(199,162,75,.45);border-radius:999px;padding:.08rem .65rem;font-size:.78rem;color:#C7A24B;margin:.1rem .25rem .1rem 0;white-space:nowrap}
+.cls-card{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem;border:1px solid rgba(199,162,75,.28);border-radius:14px;padding:.85rem 1rem;margin:.55rem 0;cursor:pointer;background:rgba(2,3,10,.35)}
+.cls-card:hover{border-color:#C7A24B}
+.cls-card b{font-size:1.12rem;min-width:5.5rem;color:#F2EDE0}
 .dim{color:#A9A694;font-size:.82rem}
 pre{background:rgba(2,3,10,.8);border:1px solid rgba(199,162,75,.25);border-radius:10px;padding:.7rem;font-size:.78rem;overflow-x:auto;white-space:pre-wrap;word-break:break-all}
 .hid{display:none!important}
-.grid{display:flex;flex-wrap:wrap;gap:.3rem;align-items:center}
+.grid{display:flex;flex-wrap:wrap;gap:.35rem;align-items:center}
+.qcard{border:1px solid rgba(199,162,75,.25);border-radius:12px;padding:.8rem .9rem;margin:.6rem 0;background:rgba(2,3,10,.4)}
+.qcard .qtitle{color:#C7A24B;font-size:.82rem;letter-spacing:.12em;margin-bottom:.35rem;display:flex;align-items:center}
+.qcard .qtitle .del{margin-left:auto}
+.optrow{display:flex;gap:.4rem;align-items:center;margin:.25rem 0}
+.optrow input[type=radio]{accent-color:#C7A24B;width:1.1rem;height:1.1rem;flex:none}
+.optrow input.field{flex:1;margin:0}
+.ann-row{border-bottom:1px solid rgba(199,162,75,.18);padding:.6rem 0}
+.slot-tabs{display:flex;gap:.35rem;flex-wrap:wrap;margin:.5rem 0}
+.slot-tabs button{border:1px solid rgba(199,162,75,.4);background:transparent;color:#A9A694;border-radius:8px;padding:.4rem .8rem;font:inherit;font-size:.86rem;cursor:pointer}
+.slot-tabs button.on{background:rgba(199,162,75,.18);color:#C7A24B;border-color:#C7A24B;font-weight:700}
 hr{border:0;border-top:1px solid rgba(199,162,75,.18);margin:.8rem 0}
-label.inl{font-size:.85rem;color:#A9A694;margin-right:.2rem}
 </style>
 </head>
 <body>
+<canvas id="space"></canvas>
 <div class="wrap">
   <h1>艦 橋</h1>
-  <div class="sub">微光星系・教師端 v1（名單在後端、本頁不存任何學生個資）</div>
+  <div class="sub">微光星系・教師端 v2｜名單在後端，本頁不存任何學生個資</div>
 
   <!-- 金鑰登入 -->
   <div class="panel" id="p-key">
@@ -53,97 +86,122 @@ label.inl{font-size:.85rem;color:#A9A694;margin-right:.2rem}
     <div class="msg" id="key-msg">金鑰只存在這台裝置的瀏覽器，不會出現在網址或程式碼中。</div>
   </div>
 
+  <!-- 導覽 -->
+  <div class="nav hid" id="nav">
+    <button data-v="classes" class="on">🚀 班級</button>
+    <button data-v="ann">📣 公告</button>
+    <button data-v="qb">📝 題目</button>
+    <button data-v="roster">📥 名單</button>
+    <button id="logout" style="border-color:rgba(180,84,75,.5);color:#C98078">登出</button>
+  </div>
+
   <!-- 班級總覽 -->
-  <div class="panel hid" id="p-classes">
+  <div class="panel hid" id="v-classes">
     <h2>班級總覽</h2>
     <div id="cls-list" class="msg">載入中…</div>
-    <div class="grid">
-      <button class="btn ghost" id="refresh">重新整理</button>
-      <button class="btn ghost" id="logout">登出（清除本機金鑰）</button>
-    </div>
+    <button class="btn ghost sm" id="refresh">↻ 重新整理</button>
   </div>
 
   <!-- 班級操作 -->
-  <div class="panel hid" id="p-ops">
-    <h2 id="ops-title">—</h2>
-
-    <h2 style="font-size:.92rem">① 回合門控（課堂中逐回合開放）</h2>
-    <div class="grid">
-      <label class="inl">本週週次</label>
-      <input class="field num" id="g-week" type="number" min="1" max="18" value="1">
-      <button class="btn ghost" data-round="1" id="r1">回合一</button>
-      <button class="btn ghost" data-round="2" id="r2">回合二</button>
-      <button class="btn ghost" data-round="3" id="r3">回合三</button>
-      <button class="btn ghost" id="rest">休息模式：關</button>
+  <div class="panel hid" id="v-ops">
+    <div class="grid" style="justify-content:space-between">
+      <h2 id="ops-title" style="margin:0">—</h2>
+      <button class="btn ghost sm" id="back">← 回班級總覽</button>
     </div>
-    <div class="msg" id="gate-msg">按回合鈕切換開放／關閉，學生端數秒內自動解鎖。</div>
-    <div class="grid" style="margin-top:.4rem">
-      <span class="tag">投影控制</span>
-      <button class="btn ghost" id="proj-live">投影即時分布</button>
-      <button class="btn ghost" id="proj-idle">投影回待機</button>
-      <button class="btn ghost" id="proj-url">複製本班投影網址</button>
-    </div>
-    <div class="msg" id="proj-msg">投影頁開在講台電腦（可嵌 Canva 簡報），這裡按什麼它 4 秒內跟著切。</div>
-    <hr>
 
-    <h2 style="font-size:.92rem">② 作答時長與遊戲參數</h2>
-    <div class="grid">
-      <label class="inl">隕石帶 秒/題</label><input class="field num" id="t-meteor" type="number" min="5" max="180">
-      <label class="inl">星軌連線 總秒</label><input class="field num" id="t-link" type="number" min="10" max="600">
-      <label class="inl">初始氧氣</label><input class="field num" id="t-o2" type="number" min="1" max="5">
-      <label class="inl">植物門檻</label><input class="field num" id="t-plant" type="number" min="0" max="9999">
-      <button class="btn" id="t-save">儲存參數</button>
-    </div>
-    <div class="msg" id="t-msg"></div>
-    <hr>
+    <details class="sec" open>
+      <summary><span class="ico">🎛</span>課堂控制（回合門控・休息模式・投影）</summary>
+      <div class="bd">
+        <div class="grid">
+          <label class="inl">本週週次</label>
+          <input class="field num" id="g-week" type="number" min="1" max="99" value="1">
+          <button class="btn ghost" id="r1">回合一</button>
+          <button class="btn ghost" id="r2">回合二</button>
+          <button class="btn ghost" id="r3">回合三</button>
+          <button class="btn ghost" id="rest">休息模式：關</button>
+        </div>
+        <div class="msg" id="gate-msg">按回合鈕切換開放／關閉；壓測期間學生端不受門控（自走）。</div>
+        <hr>
+        <div class="grid">
+          <span class="tag">投影遙控</span>
+          <button class="btn ghost" id="proj-live">投影即時分布</button>
+          <button class="btn ghost" id="proj-idle">回待機</button>
+          <button class="btn ghost" id="proj-url">複製本班投影網址</button>
+        </div>
+        <div class="msg" id="proj-msg">投影頁開在講台電腦（可嵌 Canva 簡報），這裡按什麼它 4 秒內跟著切。</div>
+      </div>
+    </details>
 
-    <h2 style="font-size:.92rem">③ 提交與出席檢視</h2>
-    <div class="grid">
-      <label class="inl">週次</label>
-      <input class="field num" id="s-week" type="number" min="1" max="99" value="1">
-      <button class="btn" id="s-load">查詢</button>
-    </div>
-    <div id="s-out" class="msg"></div>
-    <hr>
+    <details class="sec">
+      <summary><span class="ico">⚙️</span>遊戲參數（作答時長・氧氣・植物門檻）</summary>
+      <div class="bd">
+        <div class="grid">
+          <label class="inl">隕石帶 秒/題</label><input class="field num" id="t-meteor" type="number" min="5" max="180">
+          <label class="inl">星軌連線 總秒</label><input class="field num" id="t-link" type="number" min="10" max="600">
+          <label class="inl">初始氧氣</label><input class="field num" id="t-o2" type="number" min="1" max="5">
+          <label class="inl">植物門檻</label><input class="field num" id="t-plant" type="number" min="0" max="9999">
+          <button class="btn" id="t-save">儲存參數</button>
+        </div>
+        <div class="msg" id="t-msg">時長在學生下次登入時生效；氧氣只影響新建角色。</div>
+      </div>
+    </details>
 
-    <h2 style="font-size:.92rem">④ 一鍵匯出 attendance-book</h2>
-    <div class="grid">
-      <label class="inl">週次</label><input class="field num" id="e-week" type="number" min="1" max="99" value="1">
-      <label class="inl">分數</label><input class="field num" id="e-points" type="number" min="1" max="5" value="1">
-      <button class="btn" id="e-go">產生</button>
-      <button class="btn ghost hid" id="e-copy">複製 JSON</button>
-    </div>
-    <pre class="hid" id="e-out"></pre>
-    <div class="msg" id="e-msg"></div>
-    <hr>
+    <details class="sec">
+      <summary><span class="ico">📊</span>提交與出席檢視</summary>
+      <div class="bd">
+        <div class="grid">
+          <label class="inl">週次</label>
+          <input class="field num" id="s-week" type="number" min="1" max="99" value="1">
+          <button class="btn" id="s-load">查詢</button>
+        </div>
+        <div id="s-out" class="msg"></div>
+      </div>
+    </details>
 
-    <h2 style="font-size:.92rem">⑤ PIN 工具</h2>
-    <div class="grid">
-      <button class="btn" id="pin-csv">下載本班 PIN 備份 CSV</button>
-      <input class="field" id="pin-sid" placeholder="學號" style="width:9.5rem">
-      <input class="field num" id="pin-new" placeholder="新PIN" maxlength="4">
-      <button class="btn ghost" id="pin-set">重設 PIN</button>
-    </div>
-    <div class="msg" id="pin-msg"></div>
-    <hr>
+    <details class="sec">
+      <summary><span class="ico">📤</span>匯出 attendance-book</summary>
+      <div class="bd">
+        <div class="grid">
+          <label class="inl">週次</label><input class="field num" id="e-week" type="number" min="1" max="99" value="1">
+          <label class="inl">分數</label><input class="field num" id="e-points" type="number" min="1" max="5" value="1">
+          <button class="btn" id="e-go">產生</button>
+          <button class="btn ghost hid" id="e-copy">複製 JSON</button>
+        </div>
+        <pre class="hid" id="e-out"></pre>
+        <div class="msg" id="e-msg">複製後貼回「學期成績登錄系統」的活動匯入。</div>
+      </div>
+    </details>
 
-    <h2 style="font-size:.92rem">⑥ 危險區</h2>
-    <div class="grid">
-      <input class="field" id="rz-confirm" placeholder="輸入班級名稱以確認" style="width:11rem">
-      <button class="btn danger" id="rz-go">清除本班玩家資料</button>
-    </div>
-    <div class="msg" id="rz-msg">只刪角色/提交/圖鑑/救援；名單與 QR 保留。清除前請先下載 PIN 備份。</div>
+    <details class="sec">
+      <summary><span class="ico">🔑</span>PIN 工具</summary>
+      <div class="bd">
+        <div class="grid">
+          <button class="btn" id="pin-csv">下載本班 PIN 備份 CSV</button>
+          <input class="field" id="pin-sid" placeholder="學號" style="width:9.5rem">
+          <input class="field num" id="pin-new" placeholder="新PIN" maxlength="4">
+          <button class="btn ghost" id="pin-set">重設 PIN</button>
+        </div>
+        <div class="msg" id="pin-msg"></div>
+      </div>
+    </details>
 
-    <button class="btn ghost" id="back">← 回班級總覽</button>
+    <details class="sec">
+      <summary><span class="ico">⚠️</span>危險區（清除本班玩家資料）</summary>
+      <div class="bd">
+        <div class="grid">
+          <input class="field" id="rz-confirm" placeholder="輸入班級名稱以確認" style="width:11rem">
+          <button class="btn danger" id="rz-go">清除本班玩家資料</button>
+        </div>
+        <div class="msg" id="rz-msg">只刪角色/提交/圖鑑/救援；名單與 QR 保留。清除前請先下載 PIN 備份。</div>
+      </div>
+    </details>
   </div>
 
-  <!-- 星際公告管理 -->
-  <div class="panel hid" id="p-ann">
+  <!-- 星際公告 -->
+  <div class="panel hid" id="v-ann">
     <h2>星際公告管理</h2>
-    <div class="grid">
-      <input class="field" id="an-title" placeholder="公告標題（60 字內）" style="flex:1;min-width:12rem">
-    </div>
-    <textarea class="field" id="an-body" placeholder="公告文案（鵂鶹口吻，500 字內）" rows="3" style="width:100%;resize:vertical;font-family:inherit"></textarea>
+    <input class="field" id="an-title" placeholder="公告標題（60 字內）" style="width:100%">
+    <textarea class="field" id="an-body" placeholder="公告文案（鵂鶹口吻，500 字內）" rows="3"></textarea>
     <div class="grid">
       <label class="inl">出場錨點</label>
       <select class="field" id="an-anchor">
@@ -168,8 +226,35 @@ label.inl{font-size:.85rem;color:#A9A694;margin-right:.2rem}
     <div id="an-list"></div>
   </div>
 
+  <!-- 題目編輯器 -->
+  <div class="panel hid" id="v-qb">
+    <h2>題目編輯器（儲存即生效・程式不寫死任何題目）</h2>
+    <div class="grid">
+      <label class="inl">內容包</label>
+      <select class="field" id="qb-pack"></select>
+      <input class="field hid" id="qb-pack-new" placeholder="新內容包名稱" style="width:9rem">
+      <label class="inl">語系</label>
+      <select class="field" id="qb-lang"><option value="zh">中文</option><option value="en">English</option></select>
+      <label class="inl">週次/回合</label>
+      <input class="field num" id="qb-week" type="number" min="1" max="99" value="1">
+      <button class="btn ghost sm" id="qb-reload">↻ 重新載入</button>
+    </div>
+    <div class="slot-tabs" id="qb-slots">
+      <button data-slot="meteor" class="on">☄️ 隕石帶</button>
+      <button data-slot="link">✨ 星軌連線</button>
+      <button data-slot="chain">🪐 抉擇鏈</button>
+      <button data-slot="weather">🌡 氣象微行動</button>
+      <button data-slot="flags">🚩 氣閘判讀</button>
+    </div>
+    <div id="qb-editor"></div>
+    <div class="grid">
+      <button class="btn" id="qb-save">儲存本題型</button>
+    </div>
+    <div class="msg" id="qb-msg">儲存後，學生端下次登入／進關即套用新題目。</div>
+  </div>
+
   <!-- 名單管理 -->
-  <div class="panel hid" id="p-roster">
+  <div class="panel hid" id="v-roster">
     <h2>名單管理（學期初使用）</h2>
     <p class="dim">選擇「學期成績登錄系統」備份 JSON。姓名在您的瀏覽器內立即轉為遮蔽格式（王Ｏ明），
     原始姓名不會上傳——雲端只收學號＋遮蔽姓名。</p>
@@ -185,40 +270,61 @@ label.inl{font-size:.85rem;color:#A9A694;margin-right:.2rem}
 (function(){
 "use strict";
 var $=function(id){return document.getElementById(id)};
+
+/* ---------- 星空背景 ---------- */
+var cv=$('space'),cx=cv.getContext('2d'),stars=[];
+function ssize(){cv.width=innerWidth;cv.height=innerHeight;stars=[];
+  for(var i=0;i<120;i++)stars.push({x:Math.random()*cv.width,y:Math.random()*cv.height,
+    r:Math.random()*1.5+.3,p:Math.random()*Math.PI*2});}
+addEventListener('resize',ssize);ssize();
+var reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+(function frame(t){
+  cx.fillStyle='#070A14';cx.fillRect(0,0,cv.width,cv.height);
+  stars.forEach(function(s){var a=reduce?.5:(.3+.4*Math.abs(Math.sin(t/1800+s.p)));
+    cx.globalAlpha=a;cx.fillStyle='#E9E4D7';cx.beginPath();cx.arc(s.x,s.y,s.r,0,7);cx.fill()});
+  cx.globalAlpha=1;
+  if(!reduce)requestAnimationFrame(frame);
+})(0);
+
 var SB_URL='https://aecudpweqsxanfpvsaui.supabase.co';
 var SB_ANON='sb_publishable_xQyNxCTeVz4JbHciFpe7aQ_poiG7mZE';
 var KEY=localStorage.getItem('glimmer_tkey')||'';
-var CUR=null;           // 目前操作中的班級名稱
-var CURSTATE={};        // 目前班級 state 快取
+var CUR=null, CURSTATE={}, TOKENS={}, CLSNAMES=[];
 
 function rpc(fn,body){
   return fetch(SB_URL+'/rest/v1/rpc/'+fn,{method:'POST',
     headers:{'Content-Type':'application/json','apikey':SB_ANON,'Authorization':'Bearer '+SB_ANON},
-    body:JSON.stringify(body||{})})
-    .then(function(r){return r.json()});
+    body:JSON.stringify(body||{})}).then(function(r){return r.json()});
 }
 function trpc(fn,body){body=body||{};body.key=KEY;return rpc(fn,body)}
+
+/* ---------- 導覽 ---------- */
+var VIEWS=['classes','ops','ann','qb','roster'];
+function show(v){
+  $('p-key').classList.toggle('hid',v!=='key');
+  $('nav').classList.toggle('hid',v==='key');
+  VIEWS.forEach(function(x){$('v-'+x).classList.toggle('hid',x!==v)});
+  document.querySelectorAll('#nav button[data-v]').forEach(function(b){
+    b.classList.toggle('on',b.dataset.v===v||(v==='ops'&&b.dataset.v==='classes'));
+  });
+  if(v==='ann')annRefresh();
+  if(v==='qb')qbLoad();
+}
+document.querySelectorAll('#nav button[data-v]').forEach(function(b){
+  b.addEventListener('click',function(){show(b.dataset.v)});
+});
 
 /* ---------- 登入 ---------- */
 function tryEnter(){
   if(!KEY){show('key');return}
   trpc('g_teacher_classes').then(function(j){
-    if(j&&j.classes){show('main');renderClasses(j.classes)}
+    if(j&&j.classes){renderClasses(j.classes);show('classes')}
     else{KEY='';localStorage.removeItem('glimmer_tkey');show('key');
       $('key-msg').className='msg err';$('key-msg').textContent='金鑰驗證失敗，請重新輸入。'}
   });
 }
-function show(which){
-  $('p-key').classList.toggle('hid',which!=='key');
-  $('p-classes').classList.toggle('hid',which!=='main');
-  $('p-roster').classList.toggle('hid',which!=='main');
-  $('p-ann').classList.toggle('hid',which!=='main');
-  $('p-ops').classList.toggle('hid',which!=='ops');
-  if(which==='main'){annRefresh()}
-}
 $('key-go').onclick=function(){
-  KEY=$('tkey').value.trim();
-  if(!KEY){return}
+  KEY=$('tkey').value.trim();if(!KEY)return;
   localStorage.setItem('glimmer_tkey',KEY);
   $('key-msg').className='msg';$('key-msg').textContent='驗證中…';
   tryEnter();
@@ -227,20 +333,19 @@ $('logout').onclick=function(){localStorage.removeItem('glimmer_tkey');KEY='';sh
 $('refresh').onclick=tryEnter;
 
 /* ---------- 班級總覽 ---------- */
-var TOKENS={};   // 班名 → token（投影網址／投影控制用）
-var CLSNAMES=[];
 function renderClasses(list){
   TOKENS={};CLSNAMES=[];
   list.forEach(function(c){TOKENS[c.name]=c.token;CLSNAMES.push(c.name)});
   buildAnnClassChecks();
   var el=$('cls-list');el.className='';el.innerHTML='';
   list.forEach(function(c){
-    var row=document.createElement('div');row.className='cls-row';
-    row.innerHTML='<b>'+c.name+'</b>'+
+    var row=document.createElement('div');row.className='cls-card';
+    row.innerHTML='<b></b>'+
       '<span class="tag">名單 '+c.students+'</span>'+
       '<span class="tag">建角 '+c.pilots+'</span>'+
       '<span class="tag">提交 '+c.submissions+'</span>'+
       '<span class="dim" style="margin-left:auto">進入操作 →</span>';
+    row.querySelector('b').textContent=c.name;
     row.onclick=function(){openOps(c.name)};
     el.appendChild(row);
   });
@@ -250,15 +355,13 @@ function renderClasses(list){
 function openOps(name){
   CUR=name;$('ops-title').textContent='班級：'+name;
   show('ops');
-  ['gate-msg','t-msg','pin-msg','rz-msg','e-msg'].forEach(function(i){$(i).className='msg'});
+  ['gate-msg','t-msg','pin-msg','rz-msg','e-msg','proj-msg'].forEach(function(i){$(i).className='msg'});
   $('s-out').innerHTML='';$('e-out').classList.add('hid');$('e-copy').classList.add('hid');
   loadState();
 }
-$('back').onclick=function(){show('main');tryEnter()};
+$('back').onclick=function(){tryEnter()};
 
 function loadState(){
-  // 用 g_teacher_classes 拿不到 state/config，另以 token 經 g_state 讀；
-  // 這裡直接用教師函式 patch 空物件取回現值（不改任何東西）。
   trpc('g_teacher_state',{class_name:CUR,patch:{}}).then(function(j){
     CURSTATE=(j&&j.state)||{};paintGate();
   });
@@ -285,7 +388,7 @@ function gateSave(patch){
   patch.week=parseInt($('g-week').value)||1;
   trpc('g_teacher_state',{class_name:CUR,patch:patch}).then(function(j){
     if(j&&j.ok){CURSTATE=j.state;paintGate();
-      $('gate-msg').className='msg ok';$('gate-msg').textContent='已更新，學生端數秒內生效。'}
+      $('gate-msg').className='msg ok';$('gate-msg').textContent='已更新。'}
     else{$('gate-msg').className='msg err';$('gate-msg').textContent='更新失敗：'+((j&&j.error)||'')}
   });
 }
@@ -300,6 +403,23 @@ function gateSave(patch){
 $('rest').onclick=function(){gateSave({rest:!CURSTATE.rest})};
 $('g-week').onchange=function(){gateSave({rounds:CURSTATE.rounds||[]})};
 
+/* ---------- 投影遙控 ---------- */
+var PROJ_BASE=location.origin+location.pathname.replace(/teacher\.html$/,'projector.html');
+function projSet(proj){
+  trpc('g_teacher_state',{class_name:CUR,patch:{proj:proj}}).then(function(j){
+    $('proj-msg').className=j&&j.ok?'msg ok':'msg err';
+    $('proj-msg').textContent=j&&j.ok?'投影指令已送出，大螢幕 4 秒內切換。':'失敗：'+((j&&j.error)||'');
+  });
+}
+$('proj-live').onclick=function(){projSet({view:'live',week:parseInt($('g-week').value)||1,kind:'mission'})};
+$('proj-idle').onclick=function(){projSet({view:'idle'})};
+$('proj-url').onclick=function(){
+  var u=PROJ_BASE+'?c='+(TOKENS[CUR]||'');
+  navigator.clipboard.writeText(u).then(function(){
+    $('proj-msg').className='msg ok';$('proj-msg').textContent='已複製：'+u;
+  });
+};
+
 /* ---------- 參數 ---------- */
 $('t-save').onclick=function(){
   var patch={timers:{meteor:parseInt($('t-meteor').value)||30,link:parseInt($('t-link').value)||60},
@@ -307,7 +427,7 @@ $('t-save').onclick=function(){
              plant_after:parseInt($('t-plant').value)||0};
   trpc('g_teacher_config_patch',{class_name:CUR,patch:patch}).then(function(j){
     $('t-msg').className=j&&j.ok?'msg ok':'msg err';
-    $('t-msg').textContent=j&&j.ok?'已儲存。新建角色用新氧氣值；時長即時生效。':'儲存失敗：'+((j&&j.error)||'');
+    $('t-msg').textContent=j&&j.ok?'已儲存。':'儲存失敗：'+((j&&j.error)||'');
   });
 };
 
@@ -318,14 +438,13 @@ $('s-load').onclick=function(){
   trpc('g_teacher_submissions',{class_name:CUR,week:wk}).then(function(j){
     var subs=(j&&j.submissions)||[];
     var sids={};subs.forEach(function(s){sids[s.sid]=1});
-    var n=Object.keys(sids).length;
-    var html='<div class="msg ok">第 '+wk+' 週：出席（任一回合完成）'+n+' 人、提交 '+subs.length+' 筆</div>';
+    var html='<div class="msg ok">第 '+wk+' 週：出席（完成任一回合）'+Object.keys(sids).length+' 人、提交 '+subs.length+' 筆</div>';
     if(subs.length){
-      html+='<table><tr><th>學號</th><th>類別</th><th>時間</th></tr>';
+      html+='<div style="max-height:40vh;overflow-y:auto"><table><tr><th>學號</th><th>類別</th><th>時間</th></tr>';
       subs.forEach(function(s){
         html+='<tr><td>'+s.sid+'</td><td>'+s.kind+'</td><td>'+String(s.created||'').replace('T',' ').slice(0,16)+'</td></tr>';
       });
-      html+='</table>';
+      html+='</table></div>';
     }
     $('s-out').innerHTML=html;
   });
@@ -340,7 +459,7 @@ $('e-go').onclick=function(){
       lastExport=JSON.stringify(j.activity,null,2);
       $('e-out').textContent=lastExport;$('e-out').classList.remove('hid');
       $('e-copy').classList.remove('hid');
-      $('e-msg').className='msg ok';$('e-msg').textContent='出席 '+j.activity.present.length+' 人。複製後貼回成績登錄系統。';
+      $('e-msg').className='msg ok';$('e-msg').textContent='出席 '+j.activity.present.length+' 人。';
     }else{$('e-msg').className='msg err';$('e-msg').textContent='匯出失敗：'+((j&&j.error)||'')}
   });
 };
@@ -374,7 +493,7 @@ $('pin-set').onclick=function(){
 $('rz-go').onclick=function(){
   if($('rz-confirm').value.trim()!==CUR){
     $('rz-msg').className='msg err';$('rz-msg').textContent='請先輸入班級名稱「'+CUR+'」確認。';return}
-  if(!confirm('確定清除「'+CUR+'」全部玩家資料？此動作無法復原（名單與 QR 保留）。')){return}
+  if(!confirm('確定清除「'+CUR+'」全部玩家資料？此動作無法復原（名單與 QR 保留）。'))return;
   trpc('g_teacher_reset',{class_name:CUR}).then(function(j){
     $('rz-msg').className=j&&j.ok?'msg ok':'msg err';
     $('rz-msg').textContent=j&&j.ok?'已清除。':'失敗：'+((j&&j.error)||'');
@@ -382,75 +501,7 @@ $('rz-go').onclick=function(){
   });
 };
 
-/* ---------- 名單管理 ---------- */
-function mask(name){
-  var n=(name||'').replace(/[ 　]/g,'');
-  if(n.length<=1)return n+'Ｏ';
-  if(n.length===2)return n[0]+'Ｏ';
-  return n[0]+'Ｏ'+n[n.length-1];
-}
-var rosterData=null;
-$('ro-file').onchange=function(ev){
-  var f=ev.target.files[0];if(!f)return;
-  var rd=new FileReader();
-  rd.onload=function(){
-    try{
-      var data=JSON.parse(rd.result);
-      var out=[];
-      Object.keys(data.classes||{}).forEach(function(k){
-        var c=data.classes[k];
-        var students=(c.roster||[]).map(function(e){
-          return {sid:String(e.id||'').toUpperCase(),masked:mask(e.name)};
-        });
-        if(c.name&&students.length)out.push({name:c.name,students:students});
-      });
-      rosterData=out;
-      $('ro-go').disabled=false;
-      $('ro-msg').className='msg ok';
-      $('ro-msg').textContent='讀到 '+out.length+' 個班（'+out.map(function(c){return c.name+' '+c.students.length+'人'}).join('、')+'）。姓名已在本機轉遮蔽。';
-    }catch(e){
-      $('ro-msg').className='msg err';$('ro-msg').textContent='檔案格式無法解析：'+e.message;
-    }
-  };
-  rd.readAsText(f,'utf-8');
-};
-$('ro-go').onclick=function(){
-  if(!rosterData)return;
-  $('ro-go').disabled=true;
-  var done=0,msgs=[];
-  (function next(i){
-    if(i>=rosterData.length){
-      $('ro-msg').className='msg ok';$('ro-msg').textContent=msgs.join('；');
-      $('ro-go').disabled=false;tryEnter();return;
-    }
-    var c=rosterData[i];
-    trpc('g_teacher_roster',{class_name:c.name,students_json:c.students}).then(function(j){
-      msgs.push(c.name+'：'+(j&&j.ok?('匯入 '+j.added+' 人'):'失敗 '+((j&&j.error)||'')));
-      next(i+1);
-    });
-  })(0);
-};
-
-/* ---------- 投影控制（班級操作面板內） ---------- */
-var PROJ_BASE=location.origin+location.pathname.replace(/teacher\.html$/,'projector.html');
-function projSet(proj,msgEl){
-  trpc('g_teacher_state',{class_name:CUR,patch:{proj:proj}}).then(function(j){
-    $(msgEl).className=j&&j.ok?'msg ok':'msg err';
-    $(msgEl).textContent=j&&j.ok?'投影指令已送出，大螢幕 4 秒內切換。':'失敗：'+((j&&j.error)||'');
-  });
-}
-$('proj-live').onclick=function(){
-  projSet({view:'live',week:parseInt($('g-week').value)||1,kind:'mission'},'proj-msg');
-};
-$('proj-idle').onclick=function(){projSet({view:'idle'},'proj-msg')};
-$('proj-url').onclick=function(){
-  var u=PROJ_BASE+'?c='+(TOKENS[CUR]||'');
-  navigator.clipboard.writeText(u).then(function(){
-    $('proj-msg').className='msg ok';$('proj-msg').textContent='已複製：'+u;
-  });
-};
-
-/* ---------- 星際公告管理 ---------- */
+/* ---------- 星際公告 ---------- */
 var ANCHOR_LABEL={briefing:'進站簡報後',r1:'回合一結束後',r2:'回合二結束後',r3:'回合三結束後',
                   loot:'開箱後',summary:'結算前',rest:'休息模式',none:'不綁環節'};
 var editingId=null;
@@ -458,12 +509,13 @@ function buildAnnClassChecks(){
   var box=$('an-classes');box.innerHTML='<label class="inl">發送班級</label>';
   CLSNAMES.forEach(function(n){
     var lb=document.createElement('label');
-    lb.style.cssText='font-size:.85rem;margin-right:.6rem;cursor:pointer';
-    lb.innerHTML='<input type="checkbox" value="'+n+'" class="an-cls"> '+n;
+    lb.style.cssText='font-size:.88rem;margin-right:.7rem;cursor:pointer';
+    var cb=document.createElement('input');cb.type='checkbox';cb.value=n;cb.className='an-cls';
+    lb.appendChild(cb);lb.appendChild(document.createTextNode(' '+n));
     box.appendChild(lb);
   });
 }
-function annLocalToISO(v){ return v?new Date(v).toISOString():null }
+function annLocalToISO(v){return v?new Date(v).toISOString():null}
 function annISOToLocal(v){
   if(!v)return '';
   var d=new Date(v),p=function(x){return String(x).padStart(2,'0')};
@@ -474,17 +526,16 @@ function annRefresh(){
     var list=(j&&j.announcements)||[];
     var el=$('an-list');el.innerHTML=list.length?'<hr>':'';
     list.forEach(function(a){
-      var row=document.createElement('div');
-      row.className='cls-row';row.style.cursor='default';
+      var row=document.createElement('div');row.className='ann-row grid';
       var win=String(a.start_at).slice(5,16).replace('T',' ')+' ～ '+String(a.end_at).slice(5,16).replace('T',' ');
-      row.innerHTML='<b style="min-width:auto"></b>'+
+      row.innerHTML='<b style="color:#F2EDE0"></b>'+
         '<span class="tag">'+(ANCHOR_LABEL[a.anchor]||a.anchor)+'</span>'+
         '<span class="tag">'+(a.active?'生效中':'未生效/已結束')+'</span>'+
         '<span class="dim">'+win+'｜'+a.classes.join('、')+'</span>'+
         '<span style="margin-left:auto"></span>'+
-        '<button class="btn ghost an-proj">投影</button>'+
-        '<button class="btn ghost an-edit">編輯</button>'+
-        '<button class="btn danger an-del">刪除</button>';
+        '<button class="btn ghost sm an-proj">投影</button>'+
+        '<button class="btn ghost sm an-edit">編輯</button>'+
+        '<button class="btn danger sm an-del">刪除</button>';
       row.querySelector('b').textContent=a.title;
       row.querySelector('.an-proj').onclick=function(){
         var left=a.classes.length,ok=0;
@@ -492,7 +543,7 @@ function annRefresh(){
           rpc('g_teacher_state',{key:KEY,class_name:cn,patch:{proj:{view:'ann',id:a.id}}}).then(function(r){
             if(r&&r.ok)ok++;
             if(--left===0){$('an-msg').className='msg ok';
-              $('an-msg').textContent='已投影到 '+ok+' 個班的大螢幕（回待機請至該班操作面板）。'}
+              $('an-msg').textContent='已投影到 '+ok+' 個班的大螢幕。'}
           });
         });
       };
@@ -505,6 +556,7 @@ function annRefresh(){
           cb.checked=a.classes.indexOf(cb.value)>=0;
         });
         $('an-save').textContent='儲存修改';$('an-cancel').classList.remove('hid');
+        scrollTo(0,0);
       };
       row.querySelector('.an-del').onclick=function(){
         if(!confirm('刪除公告「'+a.title+'」？'))return;
@@ -537,6 +589,311 @@ function annCancelEdit(){
   $('an-save').textContent='發布公告';$('an-cancel').classList.add('hid');
 }
 $('an-cancel').onclick=annCancelEdit;
+
+/* ---------- 名單管理 ---------- */
+function mask(name){
+  var n=(name||'').replace(/[ 　]/g,'');
+  if(n.length<=1)return n+'Ｏ';
+  if(n.length===2)return n[0]+'Ｏ';
+  return n[0]+'Ｏ'+n[n.length-1];
+}
+var rosterData=null;
+$('ro-file').onchange=function(ev){
+  var f=ev.target.files[0];if(!f)return;
+  var rd=new FileReader();
+  rd.onload=function(){
+    try{
+      var data=JSON.parse(rd.result),out=[];
+      Object.keys(data.classes||{}).forEach(function(k){
+        var c=data.classes[k];
+        var students=(c.roster||[]).map(function(e){
+          return {sid:String(e.id||'').toUpperCase(),masked:mask(e.name)};
+        });
+        if(c.name&&students.length)out.push({name:c.name,students:students});
+      });
+      rosterData=out;$('ro-go').disabled=false;
+      $('ro-msg').className='msg ok';
+      $('ro-msg').textContent='讀到 '+out.length+' 個班（'+out.map(function(c){return c.name+' '+c.students.length+'人'}).join('、')+'）。姓名已在本機轉遮蔽。';
+    }catch(e){
+      $('ro-msg').className='msg err';$('ro-msg').textContent='檔案格式無法解析：'+e.message;
+    }
+  };
+  rd.readAsText(f,'utf-8');
+};
+$('ro-go').onclick=function(){
+  if(!rosterData)return;
+  $('ro-go').disabled=true;
+  var msgs=[];
+  (function next(i){
+    if(i>=rosterData.length){
+      $('ro-msg').className='msg ok';$('ro-msg').textContent=msgs.join('；');
+      $('ro-go').disabled=false;tryEnter();return;
+    }
+    var c=rosterData[i];
+    trpc('g_teacher_roster',{class_name:c.name,students_json:c.students}).then(function(j){
+      msgs.push(c.name+'：'+(j&&j.ok?('匯入 '+j.added+' 人'):'失敗 '+((j&&j.error)||'')));
+      next(i+1);
+    });
+  })(0);
+};
+
+/* ==================== 題目編輯器 ==================== */
+var QB={items:[],packs:[]};
+var qbSlot='meteor';
+var SLOT_LABEL={meteor:'隕石帶（快問快答）',link:'星軌連線（配對）',chain:'降落抉擇鏈',weather:'氣象微行動',flags:'氣閘判讀'};
+
+document.querySelectorAll('#qb-slots button').forEach(function(b){
+  b.addEventListener('click',function(){
+    qbSlot=b.dataset.slot;
+    document.querySelectorAll('#qb-slots button').forEach(function(x){x.classList.toggle('on',x===b)});
+    qbRender();
+  });
+});
+$('qb-reload').onclick=qbLoad;
+$('qb-week').onchange=qbRender;
+$('qb-lang').onchange=qbRender;
+
+function qbLoad(){
+  trpc('g_teacher_qbank_list').then(function(j){
+    QB.items=(j&&j.items)||[];
+    QB.packs=(j&&j.packs)||[];
+    if(!QB.packs.length)QB.packs=['壓測'];
+    var sel=$('qb-pack');var cur=sel.value;
+    sel.innerHTML='';
+    QB.packs.forEach(function(p){
+      var o=document.createElement('option');o.value=p;o.textContent=p;sel.appendChild(o);
+    });
+    var nw=document.createElement('option');nw.value='__new__';nw.textContent='＋新增內容包…';sel.appendChild(nw);
+    if(cur&&QB.packs.indexOf(cur)>=0)sel.value=cur;
+    qbRender();
+  });
+}
+$('qb-pack').addEventListener('change',function(){
+  $('qb-pack-new').classList.toggle('hid',$('qb-pack').value!=='__new__');
+  if($('qb-pack').value!=='__new__')qbRender();
+});
+function qbCurrentPack(){
+  var v=$('qb-pack').value;
+  if(v==='__new__')return $('qb-pack-new').value.trim();
+  return v;
+}
+function qbFind(){
+  var pack=qbCurrentPack(),week=parseInt($('qb-week').value)||1,lang=$('qb-lang').value;
+  for(var i=0;i<QB.items.length;i++){
+    var it=QB.items[i];
+    if(it.pack===pack&&it.week===week&&it.slot===qbSlot&&it.lang===lang)return it.payload;
+  }
+  return null;
+}
+/* 預設模板（新內容時） */
+function qbTemplate(){
+  if(qbSlot==='meteor')return {questions:[{q:'',a:['','',''],c:0,expl:'',wrong:''}]};
+  if(qbSlot==='link')return {pairs:[{l:'',r:'',hint:''},{l:'',r:'',hint:''},{l:'',r:'',hint:''},{l:'',r:'',hint:''}]};
+  if(qbSlot==='chain')return {steps:[{q:'',a:['','',''],fb:['','','']},{q:'',a:['','',''],fb:['','','']},{q:'',a:['','',''],fb:['','','']}],ends:['','','']};
+  if(qbSlot==='weather')return {acts:['','','','']};
+  return {cards:[{t:'',ans:'r',stu:''}]};
+}
+function el(tag,cls,html){var e=document.createElement(tag);if(cls)e.className=cls;if(html!=null)e.innerHTML=html;return e}
+function inp(cls,val,ph){var i=document.createElement('input');i.className=cls;i.value=val||'';if(ph)i.placeholder=ph;return i}
+function ta(val,ph,rows){var t=document.createElement('textarea');t.className='field';t.rows=rows||2;t.value=val||'';if(ph)t.placeholder=ph;return t}
+
+function qbRender(){
+  var data=qbFind()||qbTemplate();
+  var box=$('qb-editor');box.innerHTML='';
+  var head=el('div','dim');
+  head.textContent=SLOT_LABEL[qbSlot]+'｜內容包「'+(qbCurrentPack()||'—')+'」第 '+($('qb-week').value)+' 週（'+($('qb-lang').value==='zh'?'中文':'English')+'）'+(qbFind()?'・雲端已有內容':'・尚無內容（以下為空白模板）');
+  box.appendChild(head);
+
+  if(qbSlot==='meteor'){
+    (data.questions||[]).forEach(function(qd,qi){
+      var c=el('div','qcard');
+      var tt=el('div','qtitle','第 '+(qi+1)+' 題');
+      var del=el('button','btn danger sm del','刪除此題');
+      del.onclick=function(){data.questions.splice(qi,1);qbTmp=data;qbRenderFrom(data)};
+      tt.appendChild(del);c.appendChild(tt);
+      var q=ta(qd.q,'題幹');q.dataset.k='q';c.appendChild(q);
+      (qd.a||['','','']).forEach(function(opt,oi){
+        var row=el('div','optrow');
+        var r=document.createElement('input');r.type='radio';r.name='met-c-'+qi;r.checked=(qd.c===oi);
+        r.title='設為正解';
+        row.appendChild(r);
+        var o=inp('field',opt,'選項 '+(oi+1));row.appendChild(o);
+        c.appendChild(row);
+      });
+      c.appendChild(el('div','dim','↑ 點選圓鈕標記正解'));
+      var ex=inp('field',qd.expl,'答對解說');ex.style.width='100%';c.appendChild(ex);
+      var wr=inp('field',qd.wrong,'答錯提示（鵂鶹氣泡）');wr.style.width='100%';c.appendChild(wr);
+      box.appendChild(c);
+    });
+    var add=el('button','btn ghost sm',null);add.textContent='＋ 新增題目';
+    add.onclick=function(){var d=qbCollect();d.questions.push({q:'',a:['','',''],c:0,expl:'',wrong:''});qbRenderFrom(d)};
+    box.appendChild(add);
+  }
+
+  if(qbSlot==='link'){
+    (data.pairs||[]).forEach(function(p,pi){
+      var c=el('div','qcard');
+      var tt=el('div','qtitle','配對 '+(pi+1));
+      var del=el('button','btn danger sm del','刪除');
+      del.onclick=function(){var d=qbCollect();d.pairs.splice(pi,1);qbRenderFrom(d)};
+      tt.appendChild(del);c.appendChild(tt);
+      var row=el('div','grid');
+      var l=inp('field',p.l,'左卡（漂流物/名詞）');l.style.flex='1';
+      var r=inp('field',p.r,'右卡（用途/解釋）');r.style.flex='1';
+      row.appendChild(l);row.appendChild(r);c.appendChild(row);
+      var h=inp('field',p.hint,'連錯提示語');h.style.width='100%';c.appendChild(h);
+      box.appendChild(c);
+    });
+    var add2=el('button','btn ghost sm',null);add2.textContent='＋ 新增配對';
+    add2.onclick=function(){var d=qbCollect();d.pairs.push({l:'',r:'',hint:''});qbRenderFrom(d)};
+    box.appendChild(add2);
+  }
+
+  if(qbSlot==='chain'){
+    (data.steps||[]).forEach(function(s,si){
+      var c=el('div','qcard');
+      c.appendChild(el('div','qtitle','第 '+(si+1)+' 步'));
+      var q=ta(s.q,'情境／居民台詞');c.appendChild(q);
+      for(var oi=0;oi<3;oi++){
+        var row=el('div','grid');
+        var a=inp('field',(s.a||[])[oi],'選項 '+(oi+1));a.style.flex='1';a.dataset.role='a';
+        var f=inp('field',(s.fb||[])[oi],'該選項的回饋語');f.style.flex='1';f.dataset.role='f';
+        row.appendChild(a);row.appendChild(f);c.appendChild(row);
+      }
+      box.appendChild(c);
+    });
+    var ec=el('div','qcard');
+    ec.appendChild(el('div','qtitle','三種結語（依最後一步選項對應）'));
+    (data.ends||['','','']).forEach(function(e,ei){
+      var i=inp('field',e,'結語 '+(ei+1));i.style.width='100%';ec.appendChild(i);
+    });
+    box.appendChild(ec);
+  }
+
+  if(qbSlot==='weather'){
+    var wc=el('div','qcard');
+    wc.appendChild(el('div','qtitle','微行動選項'));
+    (data.acts||[]).forEach(function(a,ai){
+      var row=el('div','grid');
+      var i=inp('field',a,'微行動 '+(ai+1));i.style.flex='1';
+      var del=el('button','btn danger sm',null);del.textContent='刪除';
+      del.onclick=function(){var d=qbCollect();d.acts.splice(ai,1);qbRenderFrom(d)};
+      row.appendChild(i);row.appendChild(del);wc.appendChild(row);
+    });
+    var add3=el('button','btn ghost sm',null);add3.textContent='＋ 新增微行動';
+    add3.onclick=function(){var d=qbCollect();d.acts.push('');qbRenderFrom(d)};
+    wc.appendChild(add3);
+    box.appendChild(wc);
+  }
+
+  if(qbSlot==='flags'){
+    (data.cards||[]).forEach(function(cd,ci){
+      var c=el('div','qcard');
+      var tt=el('div','qtitle','訊號卡 '+(ci+1));
+      var del=el('button','btn danger sm del','刪除');
+      del.onclick=function(){var d=qbCollect();d.cards.splice(ci,1);qbRenderFrom(d)};
+      tt.appendChild(del);c.appendChild(tt);
+      var t=ta(cd.t,'訊號語錄（學生看到的句子）');c.appendChild(t);
+      var row=el('div','grid');
+      var sel=document.createElement('select');sel.className='field';
+      [['r','🚩 紅旗'],['y','⚠ 黃旗'],['g','✓ 綠旗']].forEach(function(o){
+        var op=document.createElement('option');op.value=o[0];op.textContent=o[1];
+        if(cd.ans===o[0])op.selected=true;sel.appendChild(op);
+      });
+      row.appendChild(el('label','inl','參考判讀'));row.appendChild(sel);
+      c.appendChild(row);
+      var s=inp('field',cd.stu,'揭曉時給學生的判讀說明');s.style.width='100%';c.appendChild(s);
+      box.appendChild(c);
+    });
+    var add4=el('button','btn ghost sm',null);add4.textContent='＋ 新增訊號卡';
+    add4.onclick=function(){var d=qbCollect();d.cards.push({t:'',ans:'r',stu:''});qbRenderFrom(d)};
+    box.appendChild(add4);
+  }
+}
+var qbTmp=null;
+function qbRenderFrom(data){qbTmp=data;qbRenderTemp(data)}
+function qbRenderTemp(data){
+  var orig=qbFind;qbFind=function(){return data};qbRender();qbFind=orig;
+}
+/* 從畫面收集目前編輯內容 */
+function qbCollect(){
+  var box=$('qb-editor');
+  if(qbSlot==='meteor'){
+    var qs=[];
+    box.querySelectorAll('.qcard').forEach(function(c,qi){
+      var opts=[],correct=0;
+      c.querySelectorAll('.optrow').forEach(function(row,oi){
+        opts.push(row.querySelector('input.field').value.trim());
+        if(row.querySelector('input[type=radio]').checked)correct=oi;
+      });
+      var fields=c.querySelectorAll('input.field');
+      qs.push({q:c.querySelector('textarea').value.trim(),a:opts,c:correct,
+        expl:fields[fields.length-2].value.trim(),wrong:fields[fields.length-1].value.trim()});
+    });
+    return {questions:qs};
+  }
+  if(qbSlot==='link'){
+    var ps=[];
+    box.querySelectorAll('.qcard').forEach(function(c){
+      var f=c.querySelectorAll('input.field');
+      ps.push({l:f[0].value.trim(),r:f[1].value.trim(),hint:f[2].value.trim()});
+    });
+    return {pairs:ps};
+  }
+  if(qbSlot==='chain'){
+    var steps=[],ends=[];
+    var cards=box.querySelectorAll('.qcard');
+    cards.forEach(function(c,i){
+      if(i<cards.length-1){
+        var a=[],fb=[];
+        c.querySelectorAll('.grid').forEach(function(row){
+          var f=row.querySelectorAll('input.field');
+          a.push(f[0].value.trim());fb.push(f[1].value.trim());
+        });
+        steps.push({q:c.querySelector('textarea').value.trim(),a:a,fb:fb});
+      }else{
+        c.querySelectorAll('input.field').forEach(function(f){ends.push(f.value.trim())});
+      }
+    });
+    return {steps:steps,ends:ends};
+  }
+  if(qbSlot==='weather'){
+    var acts=[];
+    box.querySelectorAll('input.field').forEach(function(f){if(f.value.trim())acts.push(f.value.trim())});
+    return {acts:acts};
+  }
+  var cards2=[];
+  box.querySelectorAll('.qcard').forEach(function(c){
+    cards2.push({t:c.querySelector('textarea').value.trim(),
+      ans:c.querySelector('select').value,
+      stu:c.querySelector('input.field').value.trim()});
+  });
+  return {cards:cards2};
+}
+$('qb-save').onclick=function(){
+  var pack=qbCurrentPack();
+  if(!pack){$('qb-msg').className='msg err';$('qb-msg').textContent='請先選擇或輸入內容包名稱';return}
+  var payload=qbCollect();
+  // 基本驗證
+  var bad='';
+  if(qbSlot==='meteor'){
+    if(!payload.questions.length)bad='至少要有一題';
+    payload.questions.forEach(function(q,i){
+      if(!q.q||q.a.some(function(x){return !x}))bad=bad||('第 '+(i+1)+' 題題幹或選項未填');
+    });
+  }
+  if(qbSlot==='link'&&payload.pairs.length<2)bad='配對至少 2 組';
+  if(qbSlot==='flags'&&!payload.cards.length)bad='至少要有一張訊號卡';
+  if(bad){$('qb-msg').className='msg err';$('qb-msg').textContent=bad;return}
+  trpc('g_teacher_qbank_save',{pack:pack,week:parseInt($('qb-week').value)||1,
+    slot:qbSlot,lang:$('qb-lang').value,payload:payload}).then(function(j){
+    if(j&&j.ok){
+      $('qb-msg').className='msg ok';
+      $('qb-msg').textContent='已儲存！學生端下次登入／進關即套用。';
+      qbLoad();
+    }else{$('qb-msg').className='msg err';$('qb-msg').textContent='儲存失敗：'+((j&&j.error)||'')}
+  });
+};
 
 tryEnter();
 })();
