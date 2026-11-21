@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>微光星系・課堂投影</title>
+<style>
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:#05070F;color:#E9E4D7;font-family:"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;overflow:hidden}
+#space{position:fixed;inset:0;z-index:0}
+.stage{position:relative;z-index:1;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:4vmin;text-align:center}
+.eyebrow{font-size:2.2vmin;letter-spacing:.5em;color:#C7A24B}
+h1{font-size:6vmin;letter-spacing:.3em;color:#F2EDE0;margin:1vmin 0}
+.dim{color:#A9A694;font-size:2.4vmin}
+.hid{display:none!important}
+/* 公告卡 */
+.ann-card{max-width:72vmin;background:rgba(8,11,24,.88);border:2px solid rgba(199,162,75,.55);border-radius:3vmin;padding:5vmin 6vmin;box-shadow:0 0 60px rgba(199,162,75,.15)}
+.ann-owl{width:14vmin;height:14vmin;border-radius:50%;border:2px solid #C7A24B;object-fit:cover;background:#0C0F1C}
+.ann-who{color:#C7A24B;font-size:2.6vmin;letter-spacing:.25em;margin:1.5vmin 0 .5vmin}
+.ann-title{font-size:5vmin;font-weight:800;color:#F2EDE0;margin:1vmin 0 2vmin}
+.ann-body{font-size:3.2vmin;line-height:1.9;text-align:left;white-space:pre-wrap}
+.ann-until{margin-top:3vmin;font-size:2.2vmin;color:#A9A694}
+/* 即時面板 */
+.live-n{font-size:16vmin;font-weight:800;color:#C7A24B;line-height:1.1}
+.live-label{font-size:3vmin;color:#A9A694;letter-spacing:.3em}
+.bars{width:70vmin;margin-top:4vmin;text-align:left}
+.bar-row{margin:1.6vmin 0}
+.bar-top{display:flex;justify-content:space-between;font-size:2.6vmin;margin-bottom:.5vmin}
+.bar-bg{height:3.2vmin;background:rgba(199,162,75,.12);border-radius:999px;overflow:hidden}
+.bar-fill{height:100%;background:linear-gradient(90deg,#8C6F2F,#C7A24B);border-radius:999px;width:0;transition:width .9s cubic-bezier(.2,.8,.2,1)}
+</style>
+</head>
+<body>
+<canvas id="space"></canvas>
+
+<!-- 待機 -->
+<div class="stage" id="v-idle">
+  <div class="eyebrow">G L I M M E R</div>
+  <h1>微 光 星 系</h1>
+  <div class="dim" id="idle-cls">課堂投影・待機中</div>
+</div>
+
+<!-- 公告卡 -->
+<div class="stage hid" id="v-ann">
+  <div class="ann-card">
+    <img class="ann-owl" src="assets/npc-owlet.webp" alt="鵂鶹">
+    <div class="ann-who">鵂鶹・指揮官｜星際公告</div>
+    <div class="ann-title" id="ann-title">—</div>
+    <div class="ann-body" id="ann-body">—</div>
+    <div class="ann-until" id="ann-until"></div>
+  </div>
+</div>
+
+<!-- 即時提交與分布 -->
+<div class="stage hid" id="v-live">
+  <div class="live-label">已 回 傳 訊 號</div>
+  <div class="live-n" id="live-n">0</div>
+  <div class="dim" id="live-sub">等待引航員回報中…</div>
+  <div class="bars" id="live-bars"></div>
+</div>
+
+<script>
+(function(){
+"use strict";
+/* 星空 */
+var cv=document.getElementById('space'),cx=cv.getContext('2d'),stars=[];
+function size(){cv.width=innerWidth;cv.height=innerHeight;stars=[];
+  for(var i=0;i<140;i++)stars.push({x:Math.random()*cv.width,y:Math.random()*cv.height,
+    r:Math.random()*1.6+.3,p:Math.random()*Math.PI*2});}
+addEventListener('resize',size);size();
+(function frame(t){cx.fillStyle='#05070F';cx.fillRect(0,0,cv.width,cv.height);
+  stars.forEach(function(s){var a=.35+.45*Math.abs(Math.sin(t/1600+s.p));
+    cx.globalAlpha=a;cx.fillStyle='#E9E4D7';cx.beginPath();
+    cx.arc(s.x,s.y,s.r,0,7);cx.fill()});cx.globalAlpha=1;
+  requestAnimationFrame(frame)})(0);
+
+var SB_URL='https://aecudpweqsxanfpvsaui.supabase.co';
+var SB_ANON='sb_publishable_xQyNxCTeVz4JbHciFpe7aQ_poiG7mZE';
+var TOKEN=new URLSearchParams(location.search).get('c')||'';
+function rpc(fn,body){
+  return fetch(SB_URL+'/rest/v1/rpc/'+fn,{method:'POST',
+    headers:{'Content-Type':'application/json','apikey':SB_ANON,'Authorization':'Bearer '+SB_ANON},
+    body:JSON.stringify(body||{})}).then(function(r){return r.json()});
+}
+var $=function(id){return document.getElementById(id)};
+function show(v){['v-idle','v-ann','v-live'].forEach(function(i){
+  $(i).classList.toggle('hid',i!=='v-'+v)});}
+
+var ANNS=[];
+function renderAnn(id){
+  var a=null;ANNS.forEach(function(x){if(x.id===id)a=x});
+  if(!a){show('idle');return}
+  $('ann-title').textContent=a.title;
+  $('ann-body').textContent=a.body||'';
+  $('ann-until').textContent=a.end_at?('開放至 '+String(a.end_at).replace('T',' ').slice(0,16)):'';
+  show('ann');
+}
+function renderLive(agg,meta){
+  $('live-n').textContent=agg.n||0;
+  $('live-sub').textContent='第 '+meta.week+' 週・持續回報中';
+  var bars=$('live-bars');bars.innerHTML='';
+  var fields=agg.fields||{};
+  var key=meta.field||null;
+  if(!key){ // 自動挑選分布欄位：choice 優先，否則取第一個有資料的欄位
+    if(fields.choice)key='choice';
+    else{for(var k in fields){key=k;break}}
+  }
+  if(key&&fields[key]){
+    var data=fields[key],tot=0,ks=Object.keys(data);
+    ks.forEach(function(k){tot+=data[k]});
+    ks.sort(function(a,b){return data[b]-data[a]});
+    ks.forEach(function(k){
+      var pct=tot?Math.round(data[k]/tot*100):0;
+      var row=document.createElement('div');row.className='bar-row';
+      row.innerHTML='<div class="bar-top"><span>'+k+'</span><span>'+pct+'%（'+data[k]+'）</span></div>'+
+        '<div class="bar-bg"><div class="bar-fill"></div></div>';
+      bars.appendChild(row);
+      requestAnimationFrame(function(){row.querySelector('.bar-fill').style.width=pct+'%'});
+    });
+  }
+  show('live');
+}
+
+var lastProj='';
+function tick(){
+  if(!TOKEN){$('idle-cls').textContent='缺少班級參數（?c=）';return}
+  rpc('g_state',{class_token:TOKEN}).then(function(j){
+    if(!(j&&j.ok)){$('idle-cls').textContent='連線失敗';return}
+    var proj=(j.state&&j.state.proj)||{view:'idle'};
+    var sig=JSON.stringify(proj);
+    if(proj.view==='ann'){
+      rpc('g_announcements',{class_token:TOKEN}).then(function(a){
+        ANNS=(a&&a.announcements)||[];renderAnn(proj.id);
+      });
+    }else if(proj.view==='live'){
+      rpc('g_aggregate',{class_token:TOKEN,week:proj.week||1,kind:proj.kind||'mission'})
+        .then(function(agg){renderLive(agg,proj)});
+    }else if(sig!==lastProj){
+      show('idle');
+    }
+    lastProj=sig;
+  });
+}
+tick();setInterval(tick,4000);
+})();
+</script>
+</body>
+</html>

@@ -77,6 +77,13 @@ label.inl{font-size:.85rem;color:#A9A694;margin-right:.2rem}
       <button class="btn ghost" id="rest">休息模式：關</button>
     </div>
     <div class="msg" id="gate-msg">按回合鈕切換開放／關閉，學生端數秒內自動解鎖。</div>
+    <div class="grid" style="margin-top:.4rem">
+      <span class="tag">投影控制</span>
+      <button class="btn ghost" id="proj-live">投影即時分布</button>
+      <button class="btn ghost" id="proj-idle">投影回待機</button>
+      <button class="btn ghost" id="proj-url">複製本班投影網址</button>
+    </div>
+    <div class="msg" id="proj-msg">投影頁開在講台電腦（可嵌 Canva 簡報），這裡按什麼它 4 秒內跟著切。</div>
     <hr>
 
     <h2 style="font-size:.92rem">② 作答時長與遊戲參數</h2>
@@ -130,6 +137,37 @@ label.inl{font-size:.85rem;color:#A9A694;margin-right:.2rem}
     <button class="btn ghost" id="back">← 回班級總覽</button>
   </div>
 
+  <!-- 星際公告管理 -->
+  <div class="panel hid" id="p-ann">
+    <h2>星際公告管理</h2>
+    <div class="grid">
+      <input class="field" id="an-title" placeholder="公告標題（60 字內）" style="flex:1;min-width:12rem">
+    </div>
+    <textarea class="field" id="an-body" placeholder="公告文案（鵂鶹口吻，500 字內）" rows="3" style="width:100%;resize:vertical;font-family:inherit"></textarea>
+    <div class="grid">
+      <label class="inl">出場錨點</label>
+      <select class="field" id="an-anchor">
+        <option value="briefing">進站簡報後</option>
+        <option value="r1">回合一結束後</option>
+        <option value="r2">回合二結束後</option>
+        <option value="r3">回合三結束後</option>
+        <option value="loot">開箱後</option>
+        <option value="summary">結算前</option>
+        <option value="rest">休息模式</option>
+        <option value="none">不綁環節（僅紅點通知）</option>
+      </select>
+      <label class="inl">開始</label><input class="field" id="an-start" type="datetime-local">
+      <label class="inl">結束</label><input class="field" id="an-end" type="datetime-local">
+    </div>
+    <div class="grid" id="an-classes"></div>
+    <div class="grid">
+      <button class="btn" id="an-save">發布公告</button>
+      <button class="btn ghost hid" id="an-cancel">取消編輯</button>
+    </div>
+    <div class="msg" id="an-msg"></div>
+    <div id="an-list"></div>
+  </div>
+
   <!-- 名單管理 -->
   <div class="panel hid" id="p-roster">
     <h2>名單管理（學期初使用）</h2>
@@ -174,7 +212,9 @@ function show(which){
   $('p-key').classList.toggle('hid',which!=='key');
   $('p-classes').classList.toggle('hid',which!=='main');
   $('p-roster').classList.toggle('hid',which!=='main');
+  $('p-ann').classList.toggle('hid',which!=='main');
   $('p-ops').classList.toggle('hid',which!=='ops');
+  if(which==='main'){annRefresh()}
 }
 $('key-go').onclick=function(){
   KEY=$('tkey').value.trim();
@@ -187,7 +227,12 @@ $('logout').onclick=function(){localStorage.removeItem('glimmer_tkey');KEY='';sh
 $('refresh').onclick=tryEnter;
 
 /* ---------- 班級總覽 ---------- */
+var TOKENS={};   // 班名 → token（投影網址／投影控制用）
+var CLSNAMES=[];
 function renderClasses(list){
+  TOKENS={};CLSNAMES=[];
+  list.forEach(function(c){TOKENS[c.name]=c.token;CLSNAMES.push(c.name)});
+  buildAnnClassChecks();
   var el=$('cls-list');el.className='';el.innerHTML='';
   list.forEach(function(c){
     var row=document.createElement('div');row.className='cls-row';
@@ -385,6 +430,113 @@ $('ro-go').onclick=function(){
     });
   })(0);
 };
+
+/* ---------- 投影控制（班級操作面板內） ---------- */
+var PROJ_BASE=location.origin+location.pathname.replace(/teacher\.html$/,'projector.html');
+function projSet(proj,msgEl){
+  trpc('g_teacher_state',{class_name:CUR,patch:{proj:proj}}).then(function(j){
+    $(msgEl).className=j&&j.ok?'msg ok':'msg err';
+    $(msgEl).textContent=j&&j.ok?'投影指令已送出，大螢幕 4 秒內切換。':'失敗：'+((j&&j.error)||'');
+  });
+}
+$('proj-live').onclick=function(){
+  projSet({view:'live',week:parseInt($('g-week').value)||1,kind:'mission'},'proj-msg');
+};
+$('proj-idle').onclick=function(){projSet({view:'idle'},'proj-msg')};
+$('proj-url').onclick=function(){
+  var u=PROJ_BASE+'?c='+(TOKENS[CUR]||'');
+  navigator.clipboard.writeText(u).then(function(){
+    $('proj-msg').className='msg ok';$('proj-msg').textContent='已複製：'+u;
+  });
+};
+
+/* ---------- 星際公告管理 ---------- */
+var ANCHOR_LABEL={briefing:'進站簡報後',r1:'回合一結束後',r2:'回合二結束後',r3:'回合三結束後',
+                  loot:'開箱後',summary:'結算前',rest:'休息模式',none:'不綁環節'};
+var editingId=null;
+function buildAnnClassChecks(){
+  var box=$('an-classes');box.innerHTML='<label class="inl">發送班級</label>';
+  CLSNAMES.forEach(function(n){
+    var lb=document.createElement('label');
+    lb.style.cssText='font-size:.85rem;margin-right:.6rem;cursor:pointer';
+    lb.innerHTML='<input type="checkbox" value="'+n+'" class="an-cls"> '+n;
+    box.appendChild(lb);
+  });
+}
+function annLocalToISO(v){ return v?new Date(v).toISOString():null }
+function annISOToLocal(v){
+  if(!v)return '';
+  var d=new Date(v),p=function(x){return String(x).padStart(2,'0')};
+  return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+'T'+p(d.getHours())+':'+p(d.getMinutes());
+}
+function annRefresh(){
+  trpc('g_teacher_announce_list').then(function(j){
+    var list=(j&&j.announcements)||[];
+    var el=$('an-list');el.innerHTML=list.length?'<hr>':'';
+    list.forEach(function(a){
+      var row=document.createElement('div');
+      row.className='cls-row';row.style.cursor='default';
+      var win=String(a.start_at).slice(5,16).replace('T',' ')+' ～ '+String(a.end_at).slice(5,16).replace('T',' ');
+      row.innerHTML='<b style="min-width:auto"></b>'+
+        '<span class="tag">'+(ANCHOR_LABEL[a.anchor]||a.anchor)+'</span>'+
+        '<span class="tag">'+(a.active?'生效中':'未生效/已結束')+'</span>'+
+        '<span class="dim">'+win+'｜'+a.classes.join('、')+'</span>'+
+        '<span style="margin-left:auto"></span>'+
+        '<button class="btn ghost an-proj">投影</button>'+
+        '<button class="btn ghost an-edit">編輯</button>'+
+        '<button class="btn danger an-del">刪除</button>';
+      row.querySelector('b').textContent=a.title;
+      row.querySelector('.an-proj').onclick=function(){
+        var left=a.classes.length,ok=0;
+        a.classes.forEach(function(cn){
+          rpc('g_teacher_state',{key:KEY,class_name:cn,patch:{proj:{view:'ann',id:a.id}}}).then(function(r){
+            if(r&&r.ok)ok++;
+            if(--left===0){$('an-msg').className='msg ok';
+              $('an-msg').textContent='已投影到 '+ok+' 個班的大螢幕（回待機請至該班操作面板）。'}
+          });
+        });
+      };
+      row.querySelector('.an-edit').onclick=function(){
+        editingId=a.id;
+        $('an-title').value=a.title;$('an-body').value=a.body||'';
+        $('an-anchor').value=a.anchor;
+        $('an-start').value=annISOToLocal(a.start_at);$('an-end').value=annISOToLocal(a.end_at);
+        document.querySelectorAll('.an-cls').forEach(function(cb){
+          cb.checked=a.classes.indexOf(cb.value)>=0;
+        });
+        $('an-save').textContent='儲存修改';$('an-cancel').classList.remove('hid');
+      };
+      row.querySelector('.an-del').onclick=function(){
+        if(!confirm('刪除公告「'+a.title+'」？'))return;
+        trpc('g_teacher_announce_delete',{ann_id:a.id}).then(annRefresh);
+      };
+      el.appendChild(row);
+    });
+  });
+}
+$('an-save').onclick=function(){
+  var cls=[];document.querySelectorAll('.an-cls:checked').forEach(function(cb){cls.push(cb.value)});
+  var body={title:$('an-title').value.trim(),body:$('an-body').value.trim(),
+    anchor:$('an-anchor').value,
+    start_at:annLocalToISO($('an-start').value),end_at:annLocalToISO($('an-end').value),
+    class_names:cls};
+  if(!body.title){$('an-msg').className='msg err';$('an-msg').textContent='請填標題';return}
+  if(!body.start_at||!body.end_at){$('an-msg').className='msg err';$('an-msg').textContent='請設定起訖時間';return}
+  if(!cls.length){$('an-msg').className='msg err';$('an-msg').textContent='請勾選至少一個班級';return}
+  if(editingId!=null)body.ann_id=editingId;
+  trpc('g_teacher_announce_save',body).then(function(j){
+    if(j&&j.ok){
+      $('an-msg').className='msg ok';$('an-msg').textContent=editingId!=null?'已更新。':'已發布。';
+      annCancelEdit();annRefresh();
+    }else{$('an-msg').className='msg err';$('an-msg').textContent='失敗：'+((j&&j.error)||'')}
+  });
+};
+function annCancelEdit(){
+  editingId=null;
+  $('an-title').value='';$('an-body').value='';
+  $('an-save').textContent='發布公告';$('an-cancel').classList.add('hid');
+}
+$('an-cancel').onclick=annCancelEdit;
 
 tryEnter();
 })();
