@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>微光星系・艦橋（教師端）</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#070A14;color:#E9E4D7;font-family:"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;line-height:1.6}
+.wrap{max-width:860px;margin:0 auto;padding:1.2rem 1rem 4rem}
+h1{font-size:1.5rem;letter-spacing:.3em;text-align:center;color:#F2EDE0;margin:.8rem 0 .2rem}
+.sub{text-align:center;color:#A9A694;font-size:.85rem;margin-bottom:1.2rem}
+.panel{background:rgba(8,11,24,.74);border:1px solid rgba(199,162,75,.28);border-radius:14px;padding:1rem 1.1rem;margin:.8rem 0}
+.panel h2{font-size:1.05rem;color:#C7A24B;letter-spacing:.15em;margin:.2rem 0 .6rem}
+.btn{display:inline-block;border:0;border-radius:999px;padding:.55rem 1.2rem;font:inherit;font-size:.95rem;font-weight:700;letter-spacing:.12em;color:#0C0F1C;background:#C7A24B;cursor:pointer;margin:.2rem .3rem .2rem 0}
+.btn:active{transform:translateY(1px)}
+.btn[disabled]{opacity:.35;cursor:default}
+.btn.ghost{background:transparent;color:#A9A694;border:1px solid rgba(199,162,75,.4)}
+.btn.on{background:#8FC79A;color:#07140B}
+.btn.danger{background:#B4544B;color:#fff}
+input.field,select.field{background:rgba(2,3,10,.8);border:1.5px solid rgba(199,162,75,.4);border-radius:10px;color:#F2EDE0;font:inherit;padding:.45rem .7rem;margin:.15rem .3rem .15rem 0}
+input.field:focus,select.field:focus{outline:none;border-color:#C7A24B}
+input.num{width:5.2rem;text-align:center}
+.msg{min-height:1.4em;font-size:.85rem;color:#A9A694;margin:.3rem 0}
+.msg.err{color:#E08A7A}.msg.ok{color:#9CC4A0}
+table{width:100%;border-collapse:collapse;font-size:.85rem;margin:.4rem 0}
+th,td{border-bottom:1px solid rgba(199,162,75,.18);padding:.35rem .4rem;text-align:left;vertical-align:top}
+th{color:#C7A24B;font-weight:700}
+.tag{display:inline-block;border:1px solid rgba(199,162,75,.45);border-radius:999px;padding:.05rem .6rem;font-size:.78rem;color:#C7A24B;margin:.1rem .2rem .1rem 0}
+.cls-row{display:flex;flex-wrap:wrap;align-items:center;gap:.4rem;border-bottom:1px solid rgba(199,162,75,.15);padding:.5rem 0;cursor:pointer}
+.cls-row b{font-size:1.05rem;min-width:5.5rem}
+.dim{color:#A9A694;font-size:.82rem}
+pre{background:rgba(2,3,10,.8);border:1px solid rgba(199,162,75,.25);border-radius:10px;padding:.7rem;font-size:.78rem;overflow-x:auto;white-space:pre-wrap;word-break:break-all}
+.hid{display:none!important}
+.grid{display:flex;flex-wrap:wrap;gap:.3rem;align-items:center}
+hr{border:0;border-top:1px solid rgba(199,162,75,.18);margin:.8rem 0}
+label.inl{font-size:.85rem;color:#A9A694;margin-right:.2rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>艦 橋</h1>
+  <div class="sub">微光星系・教師端 v1（名單在後端、本頁不存任何學生個資）</div>
+
+  <!-- 金鑰登入 -->
+  <div class="panel" id="p-key">
+    <h2>指揮官驗證</h2>
+    <div class="grid">
+      <input class="field" id="tkey" type="password" placeholder="輸入教師金鑰" style="flex:1;min-width:12rem">
+      <button class="btn" id="key-go">進入艦橋</button>
+    </div>
+    <div class="msg" id="key-msg">金鑰只存在這台裝置的瀏覽器，不會出現在網址或程式碼中。</div>
+  </div>
+
+  <!-- 班級總覽 -->
+  <div class="panel hid" id="p-classes">
+    <h2>班級總覽</h2>
+    <div id="cls-list" class="msg">載入中…</div>
+    <div class="grid">
+      <button class="btn ghost" id="refresh">重新整理</button>
+      <button class="btn ghost" id="logout">登出（清除本機金鑰）</button>
+    </div>
+  </div>
+
+  <!-- 班級操作 -->
+  <div class="panel hid" id="p-ops">
+    <h2 id="ops-title">—</h2>
+
+    <h2 style="font-size:.92rem">① 回合門控（課堂中逐回合開放）</h2>
+    <div class="grid">
+      <label class="inl">本週週次</label>
+      <input class="field num" id="g-week" type="number" min="1" max="18" value="1">
+      <button class="btn ghost" data-round="1" id="r1">回合一</button>
+      <button class="btn ghost" data-round="2" id="r2">回合二</button>
+      <button class="btn ghost" data-round="3" id="r3">回合三</button>
+      <button class="btn ghost" id="rest">休息模式：關</button>
+    </div>
+    <div class="msg" id="gate-msg">按回合鈕切換開放／關閉，學生端數秒內自動解鎖。</div>
+    <hr>
+
+    <h2 style="font-size:.92rem">② 作答時長與遊戲參數</h2>
+    <div class="grid">
+      <label class="inl">隕石帶 秒/題</label><input class="field num" id="t-meteor" type="number" min="5" max="180">
+      <label class="inl">星軌連線 總秒</label><input class="field num" id="t-link" type="number" min="10" max="600">
+      <label class="inl">初始氧氣</label><input class="field num" id="t-o2" type="number" min="1" max="5">
+      <label class="inl">植物門檻</label><input class="field num" id="t-plant" type="number" min="0" max="9999">
+      <button class="btn" id="t-save">儲存參數</button>
+    </div>
+    <div class="msg" id="t-msg"></div>
+    <hr>
+
+    <h2 style="font-size:.92rem">③ 提交與出席檢視</h2>
+    <div class="grid">
+      <label class="inl">週次</label>
+      <input class="field num" id="s-week" type="number" min="1" max="99" value="1">
+      <button class="btn" id="s-load">查詢</button>
+    </div>
+    <div id="s-out" class="msg"></div>
+    <hr>
+
+    <h2 style="font-size:.92rem">④ 一鍵匯出 attendance-book</h2>
+    <div class="grid">
+      <label class="inl">週次</label><input class="field num" id="e-week" type="number" min="1" max="99" value="1">
+      <label class="inl">分數</label><input class="field num" id="e-points" type="number" min="1" max="5" value="1">
+      <button class="btn" id="e-go">產生</button>
+      <button class="btn ghost hid" id="e-copy">複製 JSON</button>
+    </div>
+    <pre class="hid" id="e-out"></pre>
+    <div class="msg" id="e-msg"></div>
+    <hr>
+
+    <h2 style="font-size:.92rem">⑤ PIN 工具</h2>
+    <div class="grid">
+      <button class="btn" id="pin-csv">下載本班 PIN 備份 CSV</button>
+      <input class="field" id="pin-sid" placeholder="學號" style="width:9.5rem">
+      <input class="field num" id="pin-new" placeholder="新PIN" maxlength="4">
+      <button class="btn ghost" id="pin-set">重設 PIN</button>
+    </div>
+    <div class="msg" id="pin-msg"></div>
+    <hr>
+
+    <h2 style="font-size:.92rem">⑥ 危險區</h2>
+    <div class="grid">
+      <input class="field" id="rz-confirm" placeholder="輸入班級名稱以確認" style="width:11rem">
+      <button class="btn danger" id="rz-go">清除本班玩家資料</button>
+    </div>
+    <div class="msg" id="rz-msg">只刪角色/提交/圖鑑/救援；名單與 QR 保留。清除前請先下載 PIN 備份。</div>
+
+    <button class="btn ghost" id="back">← 回班級總覽</button>
+  </div>
+
+  <!-- 名單管理 -->
+  <div class="panel hid" id="p-roster">
+    <h2>名單管理（學期初使用）</h2>
+    <p class="dim">選擇「學期成績登錄系統」備份 JSON。姓名在您的瀏覽器內立即轉為遮蔽格式（王Ｏ明），
+    原始姓名不會上傳——雲端只收學號＋遮蔽姓名。</p>
+    <div class="grid">
+      <input class="field" type="file" id="ro-file" accept=".json">
+      <button class="btn" id="ro-go" disabled>匯入／更新名單</button>
+    </div>
+    <div class="msg" id="ro-msg"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+"use strict";
+var $=function(id){return document.getElementById(id)};
+var SB_URL='https://aecudpweqsxanfpvsaui.supabase.co';
+var SB_ANON='sb_publishable_xQyNxCTeVz4JbHciFpe7aQ_poiG7mZE';
+var KEY=localStorage.getItem('glimmer_tkey')||'';
+var CUR=null;           // 目前操作中的班級名稱
+var CURSTATE={};        // 目前班級 state 快取
+
+function rpc(fn,body){
+  return fetch(SB_URL+'/rest/v1/rpc/'+fn,{method:'POST',
+    headers:{'Content-Type':'application/json','apikey':SB_ANON,'Authorization':'Bearer '+SB_ANON},
+    body:JSON.stringify(body||{})})
+    .then(function(r){return r.json()});
+}
+function trpc(fn,body){body=body||{};body.key=KEY;return rpc(fn,body)}
+
+/* ---------- 登入 ---------- */
+function tryEnter(){
+  if(!KEY){show('key');return}
+  trpc('g_teacher_classes').then(function(j){
+    if(j&&j.classes){show('main');renderClasses(j.classes)}
+    else{KEY='';localStorage.removeItem('glimmer_tkey');show('key');
+      $('key-msg').className='msg err';$('key-msg').textContent='金鑰驗證失敗，請重新輸入。'}
+  });
+}
+function show(which){
+  $('p-key').classList.toggle('hid',which!=='key');
+  $('p-classes').classList.toggle('hid',which!=='main');
+  $('p-roster').classList.toggle('hid',which!=='main');
+  $('p-ops').classList.toggle('hid',which!=='ops');
+}
+$('key-go').onclick=function(){
+  KEY=$('tkey').value.trim();
+  if(!KEY){return}
+  localStorage.setItem('glimmer_tkey',KEY);
+  $('key-msg').className='msg';$('key-msg').textContent='驗證中…';
+  tryEnter();
+};
+$('logout').onclick=function(){localStorage.removeItem('glimmer_tkey');KEY='';show('key')};
+$('refresh').onclick=tryEnter;
+
+/* ---------- 班級總覽 ---------- */
+function renderClasses(list){
+  var el=$('cls-list');el.className='';el.innerHTML='';
+  list.forEach(function(c){
+    var row=document.createElement('div');row.className='cls-row';
+    row.innerHTML='<b>'+c.name+'</b>'+
+      '<span class="tag">名單 '+c.students+'</span>'+
+      '<span class="tag">建角 '+c.pilots+'</span>'+
+      '<span class="tag">提交 '+c.submissions+'</span>'+
+      '<span class="dim" style="margin-left:auto">進入操作 →</span>';
+    row.onclick=function(){openOps(c.name)};
+    el.appendChild(row);
+  });
+}
+
+/* ---------- 班級操作 ---------- */
+function openOps(name){
+  CUR=name;$('ops-title').textContent='班級：'+name;
+  show('ops');
+  ['gate-msg','t-msg','pin-msg','rz-msg','e-msg'].forEach(function(i){$(i).className='msg'});
+  $('s-out').innerHTML='';$('e-out').classList.add('hid');$('e-copy').classList.add('hid');
+  loadState();
+}
+$('back').onclick=function(){show('main');tryEnter()};
+
+function loadState(){
+  // 用 g_teacher_classes 拿不到 state/config，另以 token 經 g_state 讀；
+  // 這裡直接用教師函式 patch 空物件取回現值（不改任何東西）。
+  trpc('g_teacher_state',{class_name:CUR,patch:{}}).then(function(j){
+    CURSTATE=(j&&j.state)||{};paintGate();
+  });
+  trpc('g_teacher_config_patch',{class_name:CUR,patch:{}}).then(function(j){
+    var cf=(j&&j.config)||{};var t=cf.timers||{};
+    $('t-meteor').value=t.meteor||30;$('t-link').value=t.link||60;
+    $('t-o2').value=cf.o2_init||5;$('t-plant').value=(cf.plant_after!=null?cf.plant_after:200);
+  });
+}
+function paintGate(){
+  var wk=CURSTATE.week||parseInt($('g-week').value)||1;
+  $('g-week').value=wk;
+  var open=CURSTATE.rounds||[];
+  [1,2,3].forEach(function(n){
+    var b=$('r'+n);var on=open.indexOf(n)>=0;
+    b.className='btn '+(on?'on':'ghost');
+    b.textContent='回合'+['','一','二','三'][n]+(on?'：開放中':'');
+  });
+  var rest=!!CURSTATE.rest;
+  $('rest').className='btn '+(rest?'on':'ghost');
+  $('rest').textContent='休息模式：'+(rest?'開':'關');
+}
+function gateSave(patch){
+  patch.week=parseInt($('g-week').value)||1;
+  trpc('g_teacher_state',{class_name:CUR,patch:patch}).then(function(j){
+    if(j&&j.ok){CURSTATE=j.state;paintGate();
+      $('gate-msg').className='msg ok';$('gate-msg').textContent='已更新，學生端數秒內生效。'}
+    else{$('gate-msg').className='msg err';$('gate-msg').textContent='更新失敗：'+((j&&j.error)||'')}
+  });
+}
+[1,2,3].forEach(function(n){
+  $('r'+n).onclick=function(){
+    var open=(CURSTATE.rounds||[]).slice();
+    var i=open.indexOf(n);
+    if(i>=0){open.splice(i,1)}else{open.push(n);open.sort()}
+    gateSave({rounds:open});
+  };
+});
+$('rest').onclick=function(){gateSave({rest:!CURSTATE.rest})};
+$('g-week').onchange=function(){gateSave({rounds:CURSTATE.rounds||[]})};
+
+/* ---------- 參數 ---------- */
+$('t-save').onclick=function(){
+  var patch={timers:{meteor:parseInt($('t-meteor').value)||30,link:parseInt($('t-link').value)||60},
+             o2_init:parseInt($('t-o2').value)||5,
+             plant_after:parseInt($('t-plant').value)||0};
+  trpc('g_teacher_config_patch',{class_name:CUR,patch:patch}).then(function(j){
+    $('t-msg').className=j&&j.ok?'msg ok':'msg err';
+    $('t-msg').textContent=j&&j.ok?'已儲存。新建角色用新氧氣值；時長即時生效。':'儲存失敗：'+((j&&j.error)||'');
+  });
+};
+
+/* ---------- 提交檢視 ---------- */
+$('s-load').onclick=function(){
+  var wk=parseInt($('s-week').value)||1;
+  $('s-out').textContent='查詢中…';
+  trpc('g_teacher_submissions',{class_name:CUR,week:wk}).then(function(j){
+    var subs=(j&&j.submissions)||[];
+    var sids={};subs.forEach(function(s){sids[s.sid]=1});
+    var n=Object.keys(sids).length;
+    var html='<div class="msg ok">第 '+wk+' 週：出席（任一回合完成）'+n+' 人、提交 '+subs.length+' 筆</div>';
+    if(subs.length){
+      html+='<table><tr><th>學號</th><th>類別</th><th>時間</th></tr>';
+      subs.forEach(function(s){
+        html+='<tr><td>'+s.sid+'</td><td>'+s.kind+'</td><td>'+String(s.created||'').replace('T',' ').slice(0,16)+'</td></tr>';
+      });
+      html+='</table>';
+    }
+    $('s-out').innerHTML=html;
+  });
+};
+
+/* ---------- 匯出 ---------- */
+var lastExport='';
+$('e-go').onclick=function(){
+  trpc('g_teacher_export',{class_name:CUR,week:parseInt($('e-week').value)||1,
+                           points:parseInt($('e-points').value)||1}).then(function(j){
+    if(j&&j.activity){
+      lastExport=JSON.stringify(j.activity,null,2);
+      $('e-out').textContent=lastExport;$('e-out').classList.remove('hid');
+      $('e-copy').classList.remove('hid');
+      $('e-msg').className='msg ok';$('e-msg').textContent='出席 '+j.activity.present.length+' 人。複製後貼回成績登錄系統。';
+    }else{$('e-msg').className='msg err';$('e-msg').textContent='匯出失敗：'+((j&&j.error)||'')}
+  });
+};
+$('e-copy').onclick=function(){
+  navigator.clipboard.writeText(lastExport).then(function(){
+    $('e-msg').className='msg ok';$('e-msg').textContent='已複製到剪貼簿。';
+  });
+};
+
+/* ---------- PIN ---------- */
+$('pin-csv').onclick=function(){
+  trpc('g_teacher_pins',{class_name:CUR}).then(function(j){
+    if(!(j&&j.csv!=null)){$('pin-msg').className='msg err';$('pin-msg').textContent='下載失敗';return}
+    var a=document.createElement('a');
+    a.href=URL.createObjectURL(new Blob(['﻿'+j.csv],{type:'text/csv'}));
+    a.download='PIN備份_'+CUR+'_'+new Date().toISOString().slice(0,10)+'.csv';
+    a.click();
+    $('pin-msg').className='msg ok';$('pin-msg').textContent='已下載（'+j.n+' 筆）。';
+  });
+};
+$('pin-set').onclick=function(){
+  var sid=$('pin-sid').value.trim(),pin=$('pin-new').value.trim();
+  if(!/^[0-9]{4}$/.test(pin)){$('pin-msg').className='msg err';$('pin-msg').textContent='PIN 須為 4 位數字';return}
+  trpc('g_teacher_set_pin',{class_name:CUR,sid:sid,pin:pin}).then(function(j){
+    $('pin-msg').className=j&&j.ok?'msg ok':'msg err';
+    $('pin-msg').textContent=j&&j.ok?('已重設 '+j.sid+' 的 PIN。'):'失敗：'+((j&&j.error)||'');
+  });
+};
+
+/* ---------- 危險區 ---------- */
+$('rz-go').onclick=function(){
+  if($('rz-confirm').value.trim()!==CUR){
+    $('rz-msg').className='msg err';$('rz-msg').textContent='請先輸入班級名稱「'+CUR+'」確認。';return}
+  if(!confirm('確定清除「'+CUR+'」全部玩家資料？此動作無法復原（名單與 QR 保留）。')){return}
+  trpc('g_teacher_reset',{class_name:CUR}).then(function(j){
+    $('rz-msg').className=j&&j.ok?'msg ok':'msg err';
+    $('rz-msg').textContent=j&&j.ok?'已清除。':'失敗：'+((j&&j.error)||'');
+    $('rz-confirm').value='';
+  });
+};
+
+/* ---------- 名單管理 ---------- */
+function mask(name){
+  var n=(name||'').replace(/[ 　]/g,'');
+  if(n.length<=1)return n+'Ｏ';
+  if(n.length===2)return n[0]+'Ｏ';
+  return n[0]+'Ｏ'+n[n.length-1];
+}
+var rosterData=null;
+$('ro-file').onchange=function(ev){
+  var f=ev.target.files[0];if(!f)return;
+  var rd=new FileReader();
+  rd.onload=function(){
+    try{
+      var data=JSON.parse(rd.result);
+      var out=[];
+      Object.keys(data.classes||{}).forEach(function(k){
+        var c=data.classes[k];
+        var students=(c.roster||[]).map(function(e){
+          return {sid:String(e.id||'').toUpperCase(),masked:mask(e.name)};
+        });
+        if(c.name&&students.length)out.push({name:c.name,students:students});
+      });
+      rosterData=out;
+      $('ro-go').disabled=false;
+      $('ro-msg').className='msg ok';
+      $('ro-msg').textContent='讀到 '+out.length+' 個班（'+out.map(function(c){return c.name+' '+c.students.length+'人'}).join('、')+'）。姓名已在本機轉遮蔽。';
+    }catch(e){
+      $('ro-msg').className='msg err';$('ro-msg').textContent='檔案格式無法解析：'+e.message;
+    }
+  };
+  rd.readAsText(f,'utf-8');
+};
+$('ro-go').onclick=function(){
+  if(!rosterData)return;
+  $('ro-go').disabled=true;
+  var done=0,msgs=[];
+  (function next(i){
+    if(i>=rosterData.length){
+      $('ro-msg').className='msg ok';$('ro-msg').textContent=msgs.join('；');
+      $('ro-go').disabled=false;tryEnter();return;
+    }
+    var c=rosterData[i];
+    trpc('g_teacher_roster',{class_name:c.name,students_json:c.students}).then(function(j){
+      msgs.push(c.name+'：'+(j&&j.ok?('匯入 '+j.added+' 人'):'失敗 '+((j&&j.error)||'')));
+      next(i+1);
+    });
+  })(0);
+};
+
+tryEnter();
+})();
+</script>
+</body>
+</html>
