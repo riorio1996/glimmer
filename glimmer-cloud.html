@@ -1,0 +1,2198 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>微光星系・壓測宇宙（完整試玩）</title>
+<style>
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  [hidden]{display:none!important}
+  html,body{margin:0;min-height:100%;background:#010208}
+  body{font-family:"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;color:#E9E4D7;line-height:1.7;overflow-x:hidden}
+  #space{position:fixed;inset:0;z-index:0}
+  .app{position:relative;z-index:1;max-width:430px;margin:0 auto;min-height:100dvh;
+    display:flex;flex-direction:column;
+    padding:max(1.1rem,env(safe-area-inset-top)) 1.15rem calc(1.2rem + env(safe-area-inset-bottom))}
+  .screen{display:none;flex:1;flex-direction:column}
+  .screen.on{display:flex}
+  .eyebrow{font-size:.64rem;letter-spacing:.45em;color:#C7A24B;text-align:center;margin-top:.4rem}
+  h1{font-size:1.72rem;font-weight:700;letter-spacing:.24em;text-align:center;margin:.25rem 0 .1rem;color:#F2EDE0;text-shadow:0 0 22px rgba(199,162,75,.3)}
+  h2{font-size:1.2rem;font-weight:700;letter-spacing:.14em;text-align:center;margin:.7rem 0 .1rem}
+  .lead{color:#A9A694;text-align:center;font-size:.85rem;margin:0}
+  .chip{display:block;width:max-content;max-width:100%;margin:.5rem auto 0;font-size:.68rem;letter-spacing:.16em;
+    color:#C7A24B;border:1px solid rgba(199,162,75,.45);border-radius:999px;padding:.16rem .8rem}
+  .panel{background:rgba(8,11,24,.74);border:1px solid rgba(199,162,75,.28);
+    border-radius:16px;padding:1rem 1.1rem;margin:.8rem 0;backdrop-filter:blur(5px)}
+  .panel p{margin:.4rem 0;font-size:.93rem}
+  .dim{color:#A9A694;font-size:.82rem}
+  .grow{flex:1}
+  .btn{display:block;width:100%;border:0;border-radius:999px;padding:.92rem;margin-top:.55rem;
+    font:inherit;font-size:1rem;font-weight:700;letter-spacing:.2em;cursor:pointer;
+    color:#0C0F1C;background:#C7A24B}
+  .btn:active{transform:translateY(2px)}
+  .btn[disabled]{opacity:.35;cursor:default;transform:none}
+  .btn.ghost{background:transparent;color:#A9A694;border:1px solid rgba(199,162,75,.35);font-size:.86rem;font-weight:600}
+  input.field{width:100%;background:rgba(2,3,10,.8);border:1.5px solid rgba(199,162,75,.4);border-radius:12px;
+    color:#F2EDE0;font:inherit;font-size:1.3rem;font-weight:700;letter-spacing:.12em;
+    padding:.75rem 1rem;text-align:center;text-transform:uppercase}
+  input.field:focus{outline:none;border-color:#C7A24B}
+  .msg{min-height:2.4em;font-size:.82rem;text-align:center;margin:.45rem 0 0;color:#A9A694}
+  .msg.err{color:#E08A7A}.msg.ok{color:#9CC4A0}
+  .confirm{text-align:center}
+  .confirm .name{font-size:1.9rem;font-weight:800;letter-spacing:.28em;color:#F2EDE0;margin:.25rem 0}
+  /* 舷窗 */
+  .port{position:relative;background:#06080F;border-radius:14% / 10%;overflow:hidden}
+  .port img{position:absolute;inset:4.5%;width:91%;height:91%;object-fit:contain;border-radius:10%/7%}
+  .port svg.frame{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+  .roster{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin:.8rem 0 .3rem}
+  .pick{position:relative;border:0;background:none;padding:0;cursor:pointer;aspect-ratio:3/4}
+  .pick .port{width:100%;height:100%}
+  .pick b{position:absolute;left:8%;right:8%;bottom:6%;z-index:2;padding:.18rem .4rem;
+    font-size:.82rem;font-weight:700;letter-spacing:.2em;color:#E9E4D7;text-align:center;
+    background:rgba(1,2,8,.62);border-radius:8px}
+  .pick.sel .port{box-shadow:0 0 0 3px #C7A24B,0 0 26px rgba(199,162,75,.4)}
+  .picked-info{min-height:3em;text-align:center;font-size:.84rem;color:#A9A694}
+  .picked-info b{color:#C7A24B;letter-spacing:.12em;font-size:.93rem}
+  .stage{width:150px;aspect-ratio:3/4;margin:.8rem auto}
+  .stage .port{width:100%;height:100%}
+  .lucky{display:block;margin:.6rem auto 0;background:none;border:0;color:#8FB5AE;
+    font:inherit;font-size:.86rem;font-weight:600;text-decoration:underline;text-underline-offset:4px;cursor:pointer}
+  /* 登錄卡 */
+  .idcard{border:1.5px solid rgba(199,162,75,.65);border-radius:18px;overflow:hidden;
+    background:linear-gradient(170deg,rgba(14,18,36,.93),rgba(6,8,20,.95));margin:.8rem 0 .2rem}
+  .idcard .top{display:flex;justify-content:space-between;padding:.65rem 1rem .35rem;
+    font-size:.6rem;letter-spacing:.3em;color:#C7A24B}
+  .idcard .body{display:flex;gap:.9rem;padding:.3rem 1rem .85rem;align-items:center}
+  .idcard .photo{flex:0 0 112px;aspect-ratio:3/4}
+  .idcard .photo .port{width:100%;height:100%}
+  .idcard .meta{flex:1;min-width:0}
+  .idcard .nick{font-size:1.35rem;font-weight:800;letter-spacing:.1em;color:#F2EDE0;margin:0 0 .05rem;word-break:break-all}
+  .idcard .role{font-size:.76rem;letter-spacing:.16em;color:#C7A24B;margin-bottom:.4rem}
+  .idcard .kv{font-size:.74rem;color:#A9A694;letter-spacing:.06em;line-height:1.85}
+  .idcard .kv b{color:#D8D2C2;font-weight:600}
+  .o2{display:flex;gap:.45rem;justify-content:center;align-items:flex-end;margin:.5rem 0 0}
+  .o2 img{width:24px;height:auto;filter:drop-shadow(0 2px 5px rgba(0,0,0,.55))}
+  .o2 img.empty{filter:grayscale(1) brightness(.42)}
+  .o2-label{text-align:center;font-size:.66rem;color:#A9A694;letter-spacing:.14em;margin-top:.2rem}
+  /* 主持人 */
+  .host{display:flex;gap:.85rem;align-items:center}
+  .host .face{flex:0 0 62px;height:62px;border-radius:50%;overflow:hidden;background:#000;border:2px solid rgba(199,162,75,.55)}
+  .host .face img{width:100%;height:160%;object-fit:cover;object-position:50% 2%}
+  .host .who{font-size:.76rem;letter-spacing:.15em;color:#C7A24B}
+  .host .say{font-size:.92rem;margin-top:.1rem}
+  /* 任務 */
+  .arena{position:relative;height:215px;margin:.3rem 0 0}
+  .rock{position:absolute;left:50%;top:50%;width:160px;transform:translate(-50%,-50%);transition:opacity .4s}
+  .rock img{width:100%;display:block;filter:drop-shadow(0 0 18px rgba(242,150,90,.25))}
+  @keyframes wob{0%{transform:translate(-50%,-50%) rotate(-3deg)}50%{transform:translate(-48%,-52%) rotate(3deg)}100%{transform:translate(-50%,-50%) rotate(-3deg)}}
+  .rock.live{animation:wob 3.2s ease-in-out infinite}
+  .rock.gone{opacity:0;transform:translate(-50%,-50%) scale(1.5) rotate(14deg);transition:all .45s ease}
+  .rock.pass{opacity:0;transform:translate(10%,30%) scale(.5);transition:all .6s ease}
+  .flash{position:absolute;inset:0;background:radial-gradient(circle,rgba(255,244,214,.9),rgba(255,244,214,0) 60%);opacity:0;pointer-events:none}
+  .flash.go{animation:fl .45s ease}
+  @keyframes fl{0%{opacity:0}25%{opacity:1}100%{opacity:0}}
+  .timeline{height:5px;background:rgba(199,162,75,.2);border-radius:3px;overflow:hidden;margin:.3rem 0 .55rem}
+  .timeline i{display:block;height:100%;width:100%;background:#C7A24B;border-radius:3px}
+  .q{font-size:1rem;font-weight:700;text-align:center;margin:.2rem 0 .55rem;min-height:3em}
+  .ans{display:grid;gap:.5rem}
+  .ans button{font:inherit;font-size:.96rem;font-weight:600;color:#E9E4D7;text-align:center;
+    background:rgba(8,11,24,.78);border:1.5px solid rgba(199,162,75,.4);border-radius:12px;padding:.72rem;cursor:pointer}
+  .ans button.ok{background:rgba(94,141,88,.4);border-color:#8FB58A}
+  .ans button.no{background:rgba(160,70,60,.35);border-color:#C88A7A;opacity:.8}
+  .ans button[disabled]{cursor:default}
+  .toast{min-height:1.5em;text-align:center;font-size:.84rem;color:#C7A24B;margin-top:.45rem}
+  /* 星軌連線（v8.1：圖卡＋接點＋活線） */
+  .linkwrap{position:relative;margin:.5rem 0}
+  .linkcols{display:grid;grid-template-columns:1.15fr 1fr;gap:.55rem 2.6rem}
+  .linkcols button{position:relative;z-index:2;font:inherit;color:#E9E4D7;cursor:pointer}
+  .linkcols button.shake{animation:pshk .3s ease}
+  @keyframes pshk{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+  /* 左：漂流物圖卡 */
+  .lcard{display:flex;align-items:center;gap:.5rem;text-align:left;
+    background:rgba(8,11,24,.88);border:1.5px solid rgba(199,162,75,.4);border-radius:12px;
+    padding:.45rem 1rem .45rem .55rem;font-size:.8rem;font-weight:600;min-height:4.2em}
+  .lcard img{width:44px;height:44px;object-fit:contain;flex:0 0 44px;
+    filter:drop-shadow(0 2px 5px rgba(0,0,0,.6))}
+  /* 右：用途膠囊 */
+  .rcard{background:rgba(20,16,30,.82);border:1.5px solid rgba(143,181,138,.35);border-radius:999px;
+    padding:.55rem .8rem .55rem 1.1rem;font-size:.78rem;font-weight:600;min-height:3.2em;
+    display:flex;align-items:center;justify-content:center;text-align:center;color:#CFE2CC}
+  /* 接點 */
+  .lcard::after,.rcard::before{content:'';position:absolute;top:50%;width:11px;height:11px;
+    border-radius:50%;transform:translateY(-50%);
+    background:radial-gradient(circle at 35% 35%,#F2EDE0,#C7A24B 55%,#6A5A22);
+    border:1.5px solid #2A2B33;box-shadow:0 0 6px rgba(199,162,75,.5)}
+  .lcard::after{right:-7px}
+  .rcard::before{left:-7px;background:radial-gradient(circle at 35% 35%,#E8F2E6,#8FB58A 55%,#3E5A40);
+    box-shadow:0 0 6px rgba(143,181,138,.45)}
+  @keyframes sockpulse{0%,100%{box-shadow:0 0 5px rgba(199,162,75,.4)}50%{box-shadow:0 0 14px rgba(255,228,150,.95)}}
+  .lcard.sel{border-color:#C7A24B;box-shadow:0 0 0 2px rgba(199,162,75,.5),0 0 16px rgba(199,162,75,.35)}
+  .lcard.sel::after{animation:sockpulse 1.1s ease infinite}
+  .linkcols.arm .rcard:not(.done)::before{animation:sockpulse 1.1s ease infinite}
+  .linkcols button.done{opacity:.42;cursor:default}
+  .lcard.done{border-color:#8FB58A}
+  .rcard.done{border-color:rgba(143,181,138,.7)}
+  svg.links{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none;overflow:visible}
+  svg.links line{stroke-linecap:round}
+  svg.links line.gold{stroke:#C7A24B;stroke-width:2.5;filter:drop-shadow(0 0 4px rgba(199,162,75,.8))}
+  svg.links line.bad{stroke:#E08A7A;stroke-width:2.5;animation:badline .55s ease forwards}
+  @keyframes badline{0%{opacity:1}100%{opacity:0}}
+  .linkwrap.allin svg.links line.gold{animation:lineglow 1.1s ease 2}
+  @keyframes lineglow{50%{filter:drop-shadow(0 0 12px rgba(255,228,150,1))}}
+  .guide{text-align:center;font-size:.8rem;color:#C7A24B;letter-spacing:.08em;
+    margin:.3rem 0 .1rem;transition:opacity .8s}
+  .guide.fade{opacity:0}
+  /* 降落抉擇鏈 */
+  .planetshot{display:flex;justify-content:center;margin:.3rem 0 0}
+  .planetshot img{width:128px;height:128px;object-fit:contain;filter:drop-shadow(0 0 24px rgba(120,150,255,.3))}
+  /* 登陸過場：由遠拉近＋居民打招呼 */
+  .approach{position:relative;height:300px;margin:.4rem 0 0;overflow:hidden}
+  .approach .planet{position:absolute;left:50%;top:44%;width:240px;height:240px;
+    transform:translate(-50%,-50%) scale(.07);object-fit:contain;
+    filter:drop-shadow(0 0 30px rgba(255,200,120,.35))}
+  .approach.go .planet{transition:transform 2.8s cubic-bezier(.3,.1,.3,1);transform:translate(-50%,-50%) scale(1)}
+  .approach .resident{position:absolute;right:14%;bottom:2%;width:96px;opacity:0;transform:translateY(40px)}
+  .approach .resident img{width:100%;display:block;filter:drop-shadow(0 4px 10px rgba(0,0,0,.5))}
+  .approach .resident.in{transition:all .8s ease;opacity:1;transform:translateY(0)}
+  @keyframes bounce{0%,100%{transform:translateY(0)}40%{transform:translateY(-14px)}}
+  .approach .resident.hop{animation:bounce .7s ease 2}
+  .bubble{position:absolute;right:10%;bottom:38%;background:#F2EDE0;color:#23263A;
+    font-weight:800;font-size:1.05rem;border-radius:12px;padding:.25rem .7rem;opacity:0;
+    box-shadow:0 4px 12px rgba(0,0,0,.4)}
+  .bubble::after{content:'';position:absolute;bottom:-7px;right:22px;
+    border:8px solid transparent;border-top-color:#F2EDE0;border-bottom:0}
+  .bubble.show{opacity:1;transition:opacity .4s ease}
+  @media (prefers-reduced-motion:reduce){
+    .approach.go .planet{transition:none;transform:translate(-50%,-50%) scale(1)}
+    .approach .resident.in{transition:none}
+    .approach .resident.hop{animation:none}
+  }
+  .chaindots{display:flex;gap:.5rem;justify-content:center;margin:.4rem 0 .1rem}
+  .chaindots i{width:9px;height:9px;border-radius:50%;background:rgba(199,162,75,.22)}
+  .chaindots i.on{background:#C7A24B;box-shadow:0 0 8px rgba(199,162,75,.7)}
+  .chaindots i.past{background:rgba(199,162,75,.55)}
+  .logcard{border:1.5px dashed rgba(199,162,75,.6);border-radius:14px;padding:.9rem 1rem;margin:.7rem 0 0;
+    font-size:.88rem}
+  .logcard .lt{font-size:.68rem;letter-spacing:.3em;color:#C7A24B;font-weight:700;margin-bottom:.35rem}
+  .logcard ol{margin:.2rem 0;padding-left:1.3em}
+  .logcard .ending{color:#D8D2C2;margin-top:.4rem;font-style:normal}
+  /* 氣閘判讀（紅黃綠旗） */
+  .flagcard{background:rgba(8,11,24,.86);border:1.5px solid rgba(199,162,75,.35);border-radius:14px;
+    padding:1rem 1.1rem;margin:.6rem 0;min-height:6.2em;display:flex;align-items:center;justify-content:center;
+    font-size:.98rem;font-weight:600;text-align:center}
+  .flagbtns{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.55rem;margin:.5rem 0}
+  .flagbtns button{font:inherit;font-weight:800;font-size:.95rem;letter-spacing:.15em;color:#0C0F1C;
+    border:0;border-radius:12px;padding:.85rem .3rem;cursor:pointer}
+  .flagbtns .fr{background:#D9736A}.flagbtns .fy{background:#D9B75A}.flagbtns .fg{background:#8FB58A}
+  .flagbtns button:active{transform:translateY(2px)}
+  .flagbtns button[disabled]{opacity:.45;transform:none;cursor:default}
+  .flagprog{text-align:center;font-size:.72rem;color:#A9A694;letter-spacing:.2em}
+  /* 回饋表單 */
+  .rate{display:grid;grid-template-columns:repeat(5,1fr);gap:.4rem;margin:.4rem 0}
+  .rate button{font:inherit;font-size:1rem;font-weight:800;color:#E9E4D7;
+    background:rgba(8,11,24,.78);border:1.5px solid rgba(199,162,75,.4);border-radius:10px;
+    padding:.55rem 0;cursor:pointer}
+  .rate button.sel{background:#C7A24B;color:#0C0F1C;border-color:#C7A24B}
+  textarea.fieldta{width:100%;background:rgba(2,3,10,.8);border:1.5px solid rgba(199,162,75,.4);border-radius:12px;
+    color:#F2EDE0;font:inherit;font-size:.92rem;padding:.7rem .9rem;min-height:4.5em;resize:vertical}
+  textarea.fieldta:focus{outline:none;border-color:#C7A24B}
+  /* 橫置提示 */
+  .rotate-hint{display:none;position:fixed;inset:0;z-index:99;background:rgba(1,2,8,.96);
+    align-items:center;justify-content:center;text-align:center;padding:2rem;
+    font-size:1rem;letter-spacing:.15em;color:#C7A24B}
+  @media (orientation:landscape) and (max-height:500px) and (pointer:coarse){.rotate-hint{display:flex}}
+  /* ===== v8.1 單屏化覆寫（回饋頁除外） ===== */
+  html,body{overflow-x:clip}
+  .app{padding:max(.7rem,env(safe-area-inset-top)) 1rem calc(.75rem + env(safe-area-inset-bottom))}
+  h1{font-size:1.46rem;margin:.2rem 0 .05rem}
+  h2{font-size:1.05rem;margin:.45rem 0 .05rem}
+  .lead{font-size:.8rem}
+  .panel{padding:.7rem .85rem;margin:.5rem 0}
+  .panel p{font-size:.88rem}
+  .btn{padding:.74rem;margin-top:.42rem;font-size:.95rem}
+  .btn.ghost{padding:.6rem}
+  footer.note{margin-top:.45rem}
+  .o2 img{width:19px}
+  .host .face{flex:0 0 50px;height:50px}
+  .host .say{font-size:.86rem}
+  .roster{grid-template-columns:1fr 1fr 1fr;gap:.5rem;margin:.5rem 0 .2rem}
+  .pick b{font-size:.62rem;letter-spacing:.05em;padding:.12rem .15rem;left:5%;right:5%}
+  .picked-info{min-height:2.6em;font-size:.78rem}
+  .stage{width:112px;margin:.45rem auto}
+  .idcard{margin:.5rem 0 .15rem}
+  .idcard .photo{flex:0 0 86px}
+  .idcard .nick{font-size:1.12rem}
+  .idcard .role{margin-bottom:.2rem}
+  .idcard .kv{line-height:1.6;font-size:.7rem}
+  .idcard .body{padding:.2rem .85rem .6rem;gap:.7rem}
+  .arena{height:168px}
+  .rock{width:128px}
+  .q{font-size:.95rem;min-height:2.6em;margin:.1rem 0 .4rem}
+  .ans button{padding:.6rem;font-size:.9rem}
+  .toast{margin-top:.3rem;font-size:.8rem}
+  .linkcols{gap:.5rem 2.2rem}
+  .lcard{min-height:3.6em;font-size:.78rem}
+  .lcard.noimg{justify-content:center;text-align:center;font-size:.85rem;font-weight:700;letter-spacing:.06em}
+  .rcard{min-height:3.6em}
+  .approach{height:252px}
+  .chaindots{margin:.25rem 0 .05rem}
+  .scenetag{text-align:center;font-size:.66rem;letter-spacing:.24em;color:#C7A24B;margin:.25rem 0 .1rem}
+  .groundstrip{position:relative;height:76px;border-radius:12px;overflow:hidden;margin:.15rem 0 .25rem;
+    border:1px solid rgba(199,162,75,.25);background:linear-gradient(180deg,#0A0D1A,#131019)}
+  .groundstrip>img{width:120%;margin-left:-10%;margin-top:-34%;display:block}
+  .gs-res{position:absolute;right:7%;bottom:2px;width:40px}
+  .gs-res img{width:100%;display:block}
+  .approach .ground{position:absolute;left:50%;bottom:0;width:175%;max-width:none;z-index:1;
+    transform:translateX(-50%) translateY(115%);opacity:0;pointer-events:none;
+    transition:transform 1.2s cubic-bezier(.2,.6,.3,1),opacity .5s ease .2s}
+  .approach.landed .ground{transform:translateX(-50%) translateY(42%);opacity:1}
+  .approach.landed .planet{transition:opacity .9s ease;opacity:0}
+  .approach .resident{z-index:2}
+  .approach .bubble{z-index:3}
+  .atmoflash{position:absolute;inset:0;z-index:4;opacity:0;pointer-events:none;
+    background:radial-gradient(circle,rgba(255,250,236,.95),rgba(255,250,236,0) 72%)}
+  .atmoflash.go{animation:fl .7s ease}
+  .approach.dive .planet{transition:transform 1.4s cubic-bezier(.55,0,.85,.36);
+    transform:translate(-50%,-50%) scale(3.6)}
+  .atmoflash.wash{animation:flwash 2.3s ease}
+  @keyframes flwash{0%{opacity:0}45%{opacity:.98}75%{opacity:.85}100%{opacity:0}}
+  .chainfb{text-align:center;font-size:.8rem;color:#9CC4A0;margin:.3rem 0 0;
+    min-height:2.2em;padding:0 .4rem;line-height:1.6}
+  .flagcard{min-height:5.2em;padding:.8rem .9rem;font-size:.92rem;margin:.4rem 0}
+  .flagbtns button{padding:.72rem .3rem}
+  .driftstage{height:200px}
+  .drifter{width:98px}
+  .rescuer{width:92px}
+  .djunk{width:56px}.djunk.b{width:70px}
+  .driftlog{min-height:2.8em;font-size:.8rem}
+  .crate{width:min(168px,52%)}
+  .crate-label{margin-top:.3rem;font-size:.68rem}
+  .loot{padding:.65rem .7rem;margin:.45rem 0 .1rem}
+  .loot .art{height:88px;margin:.3rem 0}
+  .loot .art img{max-height:88px}
+  .loot .nm{font-size:1.02rem}
+  .loot .fl{min-height:0;font-size:.76rem}
+  .bag{margin-top:.25rem;font-size:.72rem}
+  .dist .lab{flex:0 0 6.5em;font-size:.78rem}
+  .dist .n{flex:0 0 4.6em;font-size:.76rem}
+  .stampgrid{gap:.4rem;margin:.4rem 0}
+  .stamp{font-size:.7rem;padding:.22rem .55rem}
+  #s-feedback .panel{padding:1rem 1.1rem;margin:.8rem 0}
+  /* ===== v9 字級放大（好讀優先） ===== */
+  body{font-size:17px}
+  .lead{font-size:.88rem}
+  .panel p{font-size:.95rem}
+  .dim{font-size:.88rem}
+  .msg{font-size:.9rem}
+  .q{font-size:1.05rem}
+  .ans button{font-size:.98rem;padding:.64rem}
+  .toast{font-size:.9rem}
+  .chainfb{font-size:.9rem}
+  .lcard{font-size:.85rem}
+  .lcard.noimg{font-size:.95rem}
+  .rcard{font-size:.86rem}
+  .host .say{font-size:.92rem}
+  .flagcard{font-size:1.04rem}
+  .acts button{font-size:.95rem}
+  .picked-info{font-size:.86rem}
+  .dist .lab{font-size:.84rem}
+  .dist .n{font-size:.82rem}
+  .loot .fl{font-size:.84rem}
+  .bag{font-size:.8rem}
+  .idcard .kv{font-size:.78rem}
+  .driftlog{font-size:.88rem}
+  .crate-label{font-size:.74rem}
+  footer.note{font-size:.7rem}
+  @media (prefers-reduced-motion:reduce){
+    .approach .ground{transition:none}
+    .atmoflash.go{animation:none}
+    .atmoflash.wash{animation:none}
+    .approach.dive .planet{transition:none}
+  }
+  /* 分布 */
+  .dist{margin:.6rem 0 0}
+  .dist .row{display:flex;align-items:center;gap:.5rem;margin:.4rem 0;font-size:.82rem}
+  .dist .lab{flex:0 0 7.5em;color:#A9A694}
+  .dist .bar{flex:1;height:14px;background:rgba(199,162,75,.12);border-radius:7px;overflow:hidden}
+  .dist .bar i{display:block;height:100%;width:0;background:rgba(199,162,75,.42);border-radius:7px;transition:width .9s ease}
+  .dist .n{flex:0 0 5.2em;text-align:right;color:#A9A694;font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
+  .dist .row.mine .lab{color:#F2EDE0;font-weight:700}
+  .dist .row.mine .bar i{background:#C7A24B;box-shadow:0 0 10px rgba(199,162,75,.5)}
+  .dist .row.mine .n{color:#C7A24B}
+  .mytag{display:inline-block;font-size:.6rem;letter-spacing:.1em;color:#0C0F1C;background:#C7A24B;
+    border-radius:999px;padding:.05em .5em;margin-left:.35em;font-weight:700;vertical-align:middle}
+  .aggline{text-align:center;font-size:.9rem;color:#D8D2C2;margin:.5rem 0 .1rem}
+  .aggline b{color:#C7A24B;font-size:1.15rem}
+  /* 溫度計 */
+  .therm{margin:.8rem 0 .2rem;text-align:center}
+  .therm input[type=range]{width:100%;accent-color:#C7A24B}
+  .therm .deg{font-size:2rem;font-weight:800;color:#F2EDE0;letter-spacing:.1em}
+  .acts{display:grid;gap:.5rem;margin:.6rem 0}
+  .acts button{font:inherit;font-size:.88rem;font-weight:600;color:#E9E4D7;text-align:left;
+    background:rgba(8,11,24,.78);border:1.5px solid rgba(199,162,75,.4);border-radius:12px;padding:.6rem .8rem;cursor:pointer}
+  .acts button.sel{border-color:#C7A24B;box-shadow:0 0 0 2px rgba(199,162,75,.45)}
+  /* 貨櫃 */
+  .crate-zone{display:flex;flex-direction:column;align-items:center;margin:.6rem 0 0}
+  .crate{border:0;background:none;padding:0;cursor:pointer;width:min(272px,80%)}
+  .crate img{width:100%;display:block;filter:drop-shadow(0 14px 26px rgba(0,0,0,.6))}
+  @keyframes shake{0%,100%{transform:rotate(0)}20%{transform:rotate(-3deg)}40%{transform:rotate(3deg)}60%{transform:rotate(-2deg)}80%{transform:rotate(2deg)}}
+  .crate.shaking{animation:shake .5s ease 2}
+  .crate-label{font-size:.78rem;color:#A9A694;letter-spacing:.14em;margin-top:.5rem;text-align:center}
+  .loot{border-radius:18px;padding:1.1rem 1rem;text-align:center;margin:.7rem 0 .2rem;
+    background:linear-gradient(170deg,rgba(14,18,36,.94),rgba(6,8,20,.96));
+    border:2px solid var(--rar,#8B93A8);box-shadow:0 0 32px var(--glow,rgba(100,110,140,.25))}
+  .loot .rar{font-size:.68rem;letter-spacing:.32em;color:var(--rar,#8B93A8);font-weight:700}
+  .loot .art{height:142px;display:flex;align-items:center;justify-content:center;margin:.5rem 0}
+  .loot .art img{max-height:142px;max-width:72%;filter:drop-shadow(0 6px 18px rgba(0,0,0,.6))}
+  .loot .nm{font-size:1.24rem;font-weight:800;letter-spacing:.12em;color:#F2EDE0}
+  .loot .sub{font-size:.72rem;letter-spacing:.2em;color:#8FC79A;margin-top:.1rem}
+  .loot .fl{font-size:.82rem;color:#A9A694;margin-top:.25rem;min-height:2.5em}
+  @keyframes pop{0%{transform:scale(.7);opacity:0}70%{transform:scale(1.04)}100%{transform:scale(1);opacity:1}}
+  .loot{animation:pop .5s ease both}
+  .bag{font-size:.78rem;color:#A9A694;text-align:center;margin-top:.35rem;letter-spacing:.08em}
+  .bag b{color:#C7A24B}
+  /* 圖鑑 */
+  .dex{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;margin:.7rem 0}
+  .dex .cell{background:rgba(8,11,24,.78);border:1.5px solid rgba(199,162,75,.25);border-radius:12px;
+    padding:.5rem .3rem .4rem;text-align:center}
+  .dex .cell.hit{border-color:var(--rc,#C7A24B)}
+  .dex .ic{height:62px;display:flex;align-items:center;justify-content:center}
+  .dex .ic img{max-height:62px;max-width:86%}
+  .dex .ic img.lock{filter:grayscale(1) brightness(.22)}
+  .dex .nm2{font-size:.68rem;letter-spacing:.05em;color:#D8D2C2;margin-top:.25rem;min-height:2em;line-height:1.4}
+  .dex .ct{font-size:.62rem;color:#A9A694}
+  .dexhead{font-size:.8rem;letter-spacing:.2em;color:#C7A24B;margin:.8rem 0 .2rem}
+  /* 漂流 */
+  .driftstage{position:relative;height:260px;margin:.4rem 0 0;overflow:hidden}
+  .drifter{position:absolute;left:50%;top:46%;width:120px;transform:translate(-50%,-50%)}
+  .drifter img{width:100%;display:block;filter:drop-shadow(0 0 22px rgba(120,150,255,.25))}
+  @keyframes tumble{0%{transform:translate(-50%,-50%) rotate(0)}100%{transform:translate(-50%,-50%) rotate(360deg)}}
+  .drifter.spin{animation:tumble 26s linear infinite}
+  .djunk{position:absolute;width:70px;opacity:.6}
+  .djunk img{width:100%;display:block}
+  @keyframes dj1{0%{transform:translate(0,0) rotate(0)}100%{transform:translate(-18px,12px) rotate(40deg)}}
+  .djunk.a{left:6%;top:12%;animation:dj1 12s ease-in-out infinite alternate}
+  .djunk.b{right:5%;top:56%;width:86px;animation:dj1 15s ease-in-out infinite alternate-reverse}
+  .sos{position:absolute;left:50%;top:8%;transform:translateX(-50%);
+    font-size:.74rem;letter-spacing:.5em;color:#E08A7A;font-weight:800}
+  @keyframes sosblink{0%,100%{opacity:1}50%{opacity:.15}}
+  .sos.blink{animation:sosblink 1.6s ease infinite}
+  .rescuer{position:absolute;left:-40%;top:40%;width:110px;opacity:0;transition:left 1.6s ease,opacity .6s ease}
+  .rescuer img{width:100%;display:block}
+  .rescuer.in{left:22%;opacity:1}
+  .handglow{position:absolute;left:50%;top:48%;width:70px;height:70px;transform:translate(-50%,-50%);
+    border-radius:50%;opacity:0;pointer-events:none;
+    background:radial-gradient(circle,rgba(255,228,150,.95),rgba(255,228,150,0) 70%)}
+  @keyframes hg{0%{opacity:0;transform:translate(-50%,-50%) scale(.5)}40%{opacity:1}100%{opacity:.7;transform:translate(-50%,-50%) scale(1.25)}}
+  .handglow.go{animation:hg 1.6s ease forwards}
+  .driftlog{min-height:3.2em;text-align:center;font-size:.86rem;color:#A9A694;font-style:normal;margin:.4rem 0 0;padding:0 .5rem}
+  /* 求救浮卡（救援者端） */
+  .soscard{position:fixed;left:50%;bottom:calc(1rem + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(140%);
+    z-index:9;width:min(400px,92vw);background:rgba(16,10,12,.95);border:1.5px solid #E08A7A;
+    border-radius:14px;padding:.7rem .9rem;transition:transform .5s ease;backdrop-filter:blur(6px)}
+  .soscard.show{transform:translateX(-50%) translateY(0)}
+  .soscard .t{font-size:.72rem;letter-spacing:.3em;color:#E08A7A;font-weight:800}
+  .soscard .w{font-size:.9rem;margin:.2rem 0 .45rem}
+  .soscard .btn{margin-top:0;padding:.6rem;font-size:.9rem}
+  /* 彈窗（救援答題） */
+  .modal{position:fixed;inset:0;z-index:10;display:none;align-items:center;justify-content:center;
+    background:rgba(1,2,8,.8);backdrop-filter:blur(4px);padding:1rem}
+  .modal.on{display:flex}
+  .modal .box{width:min(400px,94vw);background:rgba(10,13,26,.97);border:1.5px solid rgba(199,162,75,.5);
+    border-radius:16px;padding:1.1rem 1.1rem 1rem}
+  /* 結算 */
+  .stampgrid{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center;margin:.6rem 0}
+  .stamp{border:2px solid rgba(199,162,75,.6);color:#C7A24B;border-radius:10px;
+    padding:.3rem .7rem;font-size:.78rem;letter-spacing:.12em;font-weight:700;transform:rotate(-2deg)}
+  .stamp.red{border-color:rgba(224,138,122,.7);color:#E08A7A;transform:rotate(2deg)}
+  .stamp.green{border-color:rgba(143,181,138,.7);color:#9CC4A0;transform:rotate(-1deg)}
+  footer.note{text-align:center;font-size:.64rem;color:#77737F;margin-top:.8rem}
+  @media (prefers-reduced-motion:reduce){
+    .rock.live,.crate.shaking,.flash.go,.loot,.drifter.spin,.sos.blink,.djunk.a,.djunk.b,.handglow.go{animation:none}
+    .rescuer{transition:none}
+  }
+</style>
+
+<canvas id="space"></canvas>
+
+<div class="app">
+
+  <section class="screen on" id="s-intro">
+    <div class="eyebrow">G L I M M E R</div>
+    <h1>微光星系</h1>
+    <p class="lead">壓測宇宙・完整航行試玩</p>
+    <span class="chip">登入 → 建角 → 四輪任務 → 開箱 → 漂流救援 → 回饋 → 結算</span>
+    <div class="panel">
+      <p>大靜默之後，星球一顆一顆暗了下來。</p>
+      <p>每當有人重新讀懂一顆星球的訊號，那顆星就會再次亮起。</p>
+      <p><b>你，是新一代的引航員。</b></p>
+    </div>
+    <div class="panel host">
+      <div class="face"><img src="assets/npc-owlet.webp" alt="鵂鶹"></div>
+      <div>
+        <div class="who">鵂鶹・指揮官</div>
+        <div class="say">「本次航行為壓力測試：氧氣只配發兩瓶。迷思隕石帶答錯就會擦撞扣氧，其他任務安全。引航員，看好你的儀表板。」</div>
+      </div>
+    </div>
+    <div class="grow"></div>
+    <button class="btn" id="go-id">開始登錄</button>
+    <footer class="note">測試環境・虛構名單・資料入本機後端</footer>
+  </section>
+
+  <section class="screen" id="s-id">
+    <h2>身分確認</h2>
+    <p class="lead">輸入學號，與本班艦隊名單核對</p>
+    <div class="panel">
+      <input class="field" id="sid" maxlength="9" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="B11312056">
+      <p class="msg" id="sid-msg">格式：B＋8 碼數字，或專班 E＋4 碼＋字母＋3 碼</p>
+      <p class="dim" style="text-align:center;font-size:.7rem">測試學號：B11312056、B11416017、B11436062、E1141A001</p>
+    </div>
+    <div class="panel confirm" id="confirm-box" hidden>
+      <p class="dim">名單核對成功</p>
+      <div class="name" id="masked-name"></div>
+      <div id="pin-login" hidden>
+        <p class="dim">此學號已有角色——輸入建角時設定的 4 碼 PIN</p>
+        <input class="field" id="pin-in" maxlength="4" inputmode="numeric" placeholder="••••" style="letter-spacing:.5em">
+        <button class="btn" id="do-login">找回我的角色</button>
+        <p class="msg" id="login-msg">&nbsp;</p>
+      </div>
+      <p id="confirm-q">是你本人嗎？</p>
+      <button class="btn" id="yes-me">是，就是我</button>
+      <button class="btn ghost" id="not-me">不是，重新輸入</button>
+    </div>
+    <div class="grow"></div>
+    <button class="btn ghost" id="back-intro">回上一頁</button>
+  </section>
+
+  <section class="screen" id="s-pick">
+    <h2>選擇你的引航員</h2>
+    <p class="lead">本宇宙的六位夥伴正在舷窗後待命</p>
+    <div class="roster" id="roster"></div>
+    <p class="picked-info" id="picked-info">點一下舷窗看介紹</p>
+    <div class="grow"></div>
+    <button class="btn" id="go-nick" disabled>就是這位</button>
+    <button class="btn ghost" id="back-id">回上一步</button>
+  </section>
+
+  <section class="screen" id="s-nick">
+    <h2>你的星際代號</h2>
+    <p class="lead">整學期的任務都會用這個名字</p>
+    <div class="stage" id="stage"></div>
+    <div class="panel" style="margin-top:.2rem">
+      <input class="field" id="nick" maxlength="8" autocomplete="off" placeholder="最多 8 個字" style="text-transform:none;font-size:1.1rem">
+      <button class="lucky" id="lucky">手氣不錯？抽一個代號</button>
+      <p class="dim" style="text-align:center;margin:.6rem 0 .2rem">設定 4 碼 PIN（換手機找回角色用）</p>
+      <input class="field" id="pin-set" maxlength="4" inputmode="numeric" placeholder="••••" style="letter-spacing:.5em">
+      <p class="msg" id="nick-msg">&nbsp;</p>
+    </div>
+    <div class="grow"></div>
+    <button class="btn" id="go-card" disabled>完成登錄</button>
+    <button class="btn ghost" id="back-pick">重選角色</button>
+  </section>
+
+  <section class="screen" id="s-card">
+    <h2>引航員登錄卡</h2>
+    <div class="idcard">
+      <div class="top"><span>GLIMMER PILOT</span><span id="pilot-no"></span></div>
+      <div class="body">
+        <div class="photo" id="card-photo"></div>
+        <div class="meta">
+          <p class="nick" id="card-nick"></p>
+          <p class="role" id="card-role"></p>
+          <p class="kv">學號　<b id="card-sid"></b><br>姓名　<b id="card-name"></b><br>進度　<b id="card-prog"></b></p>
+        </div>
+      </div>
+    </div>
+    <div class="panel" style="padding:.6rem .8rem">
+      <div class="o2" id="o2a"></div>
+      <div class="o2-label">氧氣存量（壓測配額：2 瓶起航）</div>
+    </div>
+    <div class="grow"></div>
+    <button class="btn" id="go-round">出發航行</button>
+    <button class="btn ghost" id="go-dex1">寶物圖鑑</button>
+    <button class="btn ghost" id="redo">重新測試（清除本機紀錄）</button>
+    <footer class="note">壓測宇宙・9017／9024 共用內容・虛構名單</footer>
+  </section>
+
+  <section class="screen" id="s-brief">
+    <div class="eyebrow" id="brief-no"></div>
+    <h1 style="font-size:1.45rem" id="brief-title"></h1>
+    <div class="panel host">
+      <div class="face"><img src="assets/npc-owlet.webp" alt="鵂鶹"></div>
+      <div>
+        <div class="who">鵂鶹・指揮官</div>
+        <div class="say" id="brief-say"></div>
+      </div>
+    </div>
+    <div class="panel" style="padding:.6rem .8rem">
+      <div class="o2" id="o2b"></div>
+      <div class="o2-label">氧氣存量</div>
+    </div>
+    <div class="grow"></div>
+    <button class="btn" id="go-task"></button>
+  </section>
+
+  <section class="screen" id="s-mission">
+    <div class="o2" id="o2c" style="margin-top:.1rem"></div>
+    <div class="arena">
+      <div class="rock" id="rock"><img id="rock-img" src="" alt="隕石"></div>
+      <div class="flash" id="flash"></div>
+    </div>
+    <div class="timeline"><i id="tbar"></i></div>
+    <p class="q" id="qtext"></p>
+    <div class="ans" id="ans"></div>
+    <p class="toast" id="toast">&nbsp;</p>
+  </section>
+
+  <section class="screen" id="s-match">
+    <div class="o2" id="o2e" style="margin-top:.1rem"></div>
+    <h2 style="margin-top:.4rem">星軌連線・訊號干擾源</h2>
+    <div class="timeline"><i id="mbar"></i></div>
+    <div class="linkwrap" id="linkwrap">
+      <svg class="links" id="linksvg"></svg>
+      <div class="linkcols" id="linkcols"></div>
+    </div>
+    <p class="toast" id="mtoast">&nbsp;</p>
+    <div class="grow"></div>
+  </section>
+
+  <section class="screen" id="s-approach">
+    <h2 style="margin-top:.3rem">星球登陸</h2>
+    <p class="lead" id="appr-lead">進場中——抓穩了</p>
+    <div class="approach" id="approach">
+      <img class="planet" id="appr-planet" src="assets/planet-demo.webp" alt="溫暖星球">
+      <img class="ground" id="appr-ground" src="assets/ground.webp" alt="">
+      <div class="atmoflash" id="atmoflash"></div>
+      <div class="resident" id="appr-res"><img id="appr-res-img" src="assets/resident1.webp" alt="星球居民"></div>
+      <div class="bubble" id="appr-bubble">？</div>
+    </div>
+    <div class="panel host" id="appr-say" hidden>
+      <div class="face"><img src="assets/resident2.webp" alt="星球居民" style="object-position:50% 10%"></div>
+      <div>
+        <div class="who">溫暖星球・蕈菇居民</div>
+        <div class="say">「其實……我本來只想看五分鐘『訊號盒』——就是你們藍星人說的『手機』啦——結果回過神來又是三個小時。最近整顆星球的人都這樣，大家越來越少跟彼此說話了。」</div>
+      </div>
+    </div>
+    <div class="grow"></div>
+    <button class="btn" id="appr-wave" hidden>👋 揮手打招呼</button>
+    <button class="btn" id="appr-start" hidden>回應他</button>
+  </section>
+
+  <section class="screen" id="s-chain">
+    <h2 style="margin-top:.3rem">星球登陸</h2>
+    <div class="scenetag">溫暖星球・居民小屋前</div>
+    <div class="groundstrip"><img src="assets/ground.webp" alt=""><span class="gs-res"><img src="assets/resident2.webp" alt="居民"></span></div>
+    <div class="chaindots" id="chaindots"><i></i><i></i><i></i></div>
+    <div class="panel">
+      <p id="chain-q" style="font-weight:700;min-height:3.5em"></p>
+      <div class="ans" id="chain-ans" style="margin-top:.5rem"></div>
+    </div>
+    <p class="chainfb" id="chain-fb" hidden></p>
+    <div class="panel" id="chain-dist-box" hidden>
+      <p class="dim" style="margin:0 0 .2rem">全班即時分布（匿名航跡）</p>
+      <div class="dist" id="chain-dist"></div>
+    </div>
+    <div class="logcard" id="chain-log" hidden>
+      <div class="lt">登 陸 日 誌</div>
+      <ol id="chain-log-list"></ol>
+      <p class="ending" id="chain-log-end"></p>
+    </div>
+    <div class="grow"></div>
+    <button class="btn" id="chain-next" hidden></button>
+  </section>
+
+  <section class="screen" id="s-flags">
+    <h2 style="margin-top:.4rem">氣閘判讀</h2>
+    <p class="lead">訊號一張張進站——判讀它是警訊還是安全訊號</p>
+    <p class="flagprog" id="flagprog"></p>
+    <div class="flagcard" id="flagcard"></div>
+    <div class="flagbtns">
+      <button class="fr" id="flag-r">🚩 紅旗</button>
+      <button class="fy" id="flag-y">⚠ 黃旗</button>
+      <button class="fg" id="flag-g">✓ 綠旗</button>
+    </div>
+    <p class="chainfb" id="flag-fb" hidden></p>
+    <div class="panel" id="flag-dist-box" hidden>
+      <p class="dim" style="margin:0 0 .2rem">全班判讀</p>
+      <div class="dist" id="flag-dist"></div>
+    </div>
+    <div class="grow"></div>
+  </section>
+
+  <section class="screen" id="s-feedback">
+    <h2 style="margin-top:.4rem">航行回饋</h2>
+    <p class="lead">幫引航員總部調整下一次航行——約 30 秒</p>
+    <div class="panel">
+      <p class="dim" style="margin:0 0 .2rem">這趟航行好玩嗎？（1 無聊－5 超好玩）</p>
+      <div class="rate" id="fb-fun"></div>
+      <p class="dim" style="margin:.5rem 0 .2rem">操作順手嗎？（1 很卡－5 很順）</p>
+      <div class="rate" id="fb-ease"></div>
+    </div>
+    <div class="panel">
+      <p class="dim" style="margin:0 0 .3rem">最喜歡哪幾關？（可複選）</p>
+      <div class="acts" id="fb-fav"></div>
+    </div>
+    <div class="panel">
+      <p class="dim" style="margin:0 0 .3rem">哪些環節卡卡的、不好懂？（可複選）</p>
+      <div class="acts" id="fb-stuck"></div>
+    </div>
+    <div class="panel">
+      <p class="dim" style="margin:0 0 .3rem">想對總部說的話（可留空）</p>
+      <textarea class="fieldta" id="fb-comment" maxlength="200" placeholder="任何建議都歡迎……"></textarea>
+    </div>
+    <div class="grow"></div>
+    <button class="btn" id="fb-submit" disabled>送出回饋</button>
+  </section>
+
+  <section class="screen" id="s-weather">
+    <h2 style="margin-top:.4rem">星球氣象回報</h2>
+    <p class="lead">匿名回報你的星球氣象——安全作答，不扣氧</p>
+    <div class="panel therm" id="therm-box">
+      <p class="dim" style="margin:0">這一週，你的「獎賞星軌道」還穩嗎？</p>
+      <div class="deg" id="deg">3</div>
+      <input type="range" id="thermo" min="1" max="5" value="3" step="1">
+      <p class="dim" style="display:flex;justify-content:space-between;margin:.1rem 0 0"><span>1 穩定運行</span><span>5 嚴重偏移</span></p>
+    </div>
+    <div class="panel" id="acts-box">
+      <p class="dim" style="margin:0 0 .3rem">選一個本週微行動：</p>
+      <div class="acts" id="acts"></div>
+    </div>
+    <div class="panel" id="weather-agg" hidden>
+      <p class="aggline" id="agg-headline"></p>
+      <p class="chainfb" id="weather-fb"></p>
+      <p class="dim" style="margin:.4rem 0 .1rem">全班氣象圖（軌道穩定度）</p>
+      <div class="dist" id="weather-dist"></div>
+      <p class="dim" style="margin:.7rem 0 .1rem">微行動承諾</p>
+      <div class="dist" id="action-dist"></div>
+    </div>
+    <div class="grow"></div>
+    <button class="btn" id="submit-r3" disabled>送出回報</button>
+    <button class="btn" id="weather-next" hidden>完成觀測回報</button>
+  </section>
+
+  <section class="screen" id="s-sum">
+    <h1 style="margin-top:.9rem;font-size:1.4rem" id="sum-title">穿越成功</h1>
+    <p class="lead" id="sum-line"></p>
+    <div class="panel" style="padding:.6rem .8rem">
+      <div class="o2" id="o2d"></div>
+      <div class="o2-label">氧氣存量</div>
+    </div>
+    <div class="panel host">
+      <div class="face"><img src="assets/npc-owlet.webp" alt="鵂鶹"></div>
+      <div>
+        <div class="who">鵂鶹・指揮官</div>
+        <div class="say">「雷達有反應——前方漂著一個貨櫃。運氣好是寶物，運氣不好……嗯，你會知道的。」</div>
+      </div>
+    </div>
+    <div class="grow"></div>
+    <button class="btn" id="go-crate">靠近查看</button>
+  </section>
+
+  <section class="screen" id="s-crate">
+    <h2 style="margin-top:.5rem">漂流貨櫃</h2>
+    <p class="lead" id="crate-hint">點擊貨櫃開啟</p>
+    <div class="crate-zone">
+      <button class="crate" id="crate" aria-label="開啟貨櫃"><img src="assets/crate.webp" alt="漂流貨櫃"></button>
+      <div class="crate-label">來路不明・輕微旋轉中</div>
+    </div>
+    <div class="loot" id="loot" hidden>
+      <div class="rar" id="loot-rar"></div>
+      <div class="art" id="loot-art"></div>
+      <div class="nm" id="loot-nm"></div>
+      <div class="sub" id="loot-sub"></div>
+      <div class="fl" id="loot-fl"></div>
+    </div>
+    <p class="bag">回收零件 <b id="parts">0</b>／3　・　氧氣 <b id="bag-o2">–</b>／5</p>
+    <p class="toast" id="bag-toast">&nbsp;</p>
+    <div class="grow"></div>
+    <button class="btn" id="crate-next" hidden></button>
+    <button class="btn ghost" id="go-dex2">寶物圖鑑</button>
+    <footer class="note">機率：垃圾 30%・氧氣瓶 5%・在地植物 5%（一人僅一次）・寶物 60%</footer>
+  </section>
+
+  <section class="screen" id="s-dex">
+    <h2 style="margin-top:.4rem">寶物圖鑑</h2>
+    <p class="lead" id="dex-pct"></p>
+    <div class="dexhead">珍稀寶物（九種）</div>
+    <div class="dex" id="dex-t"></div>
+    <div class="dexhead">太空垃圾（六款）</div>
+    <div class="dex" id="dex-j"></div>
+    <div class="grow"></div>
+    <button class="btn ghost" id="back-from-dex">返回</button>
+    <footer class="note">圖鑑隨帳號存於後端，換裝置不遺失。</footer>
+  </section>
+
+  <section class="screen" id="s-drift">
+    <div class="eyebrow" style="color:#E08A7A">M A Y D A Y</div>
+    <h2>漂流中</h2>
+    <p class="lead">氧氣用完不是結束——會有人來牽你回家</p>
+    <div class="driftstage">
+      <div class="sos blink" id="drift-sos">S O S</div>
+      <div class="djunk a"><img src="assets/j2.webp" alt=""></div>
+      <div class="djunk b"><img src="assets/j6.webp" alt=""></div>
+      <div class="drifter spin" id="drifter"><img id="drifter-img" src="" alt="漂流中的你"></div>
+      <div class="rescuer" id="rescuer"><img id="rescuer-img" src="" alt="救援者"></div>
+      <div class="handglow" id="handglow"></div>
+    </div>
+    <p class="driftlog" id="driftlog"></p>
+    <div class="panel host" id="drift-npc">
+      <div class="face"><img src="assets/npc-quokka.webp" alt="短尾矮袋鼠"></div>
+      <div>
+        <div class="who">短尾矮袋鼠・微笑大使</div>
+        <div class="say">「求救訊號已廣播給同學——要是兩週都沒人來，我親自去牽你。微笑大使永遠不會丟下任何人。」</div>
+      </div>
+    </div>
+    <p class="toast" id="drift-toast">&nbsp;</p>
+    <div class="grow"></div>
+    <button class="btn ghost" id="drift-continue">使用備用通訊器，繼續任務</button>
+  </section>
+
+  <div class="rotate-hint">請將手機轉直<br>繼續航行 🚀</div>
+
+  <section class="screen" id="s-final">
+    <div class="eyebrow">V O Y A G E &nbsp; C O M P L E T E</div>
+    <h1 style="font-size:1.5rem">航行結算</h1>
+    <p class="lead" id="final-line"></p>
+    <div class="panel" style="padding:.6rem .8rem">
+      <div class="o2" id="o2f"></div>
+      <div class="o2-label">最終氧氣存量</div>
+    </div>
+    <div class="panel">
+      <p class="dim" style="margin:0 0 .2rem;text-align:center">航行戳章</p>
+      <div class="stampgrid" id="final-stamps"></div>
+    </div>
+    <div class="panel" id="final-titles-box" hidden>
+      <p class="dim" style="margin:0 0 .2rem;text-align:center">獲得稱號</p>
+      <div class="stampgrid" id="final-titles"></div>
+    </div>
+    <div class="grow"></div>
+    <button class="btn" id="final-dex">寶物圖鑑</button>
+    <button class="btn ghost" id="final-card">返回登錄卡</button>
+    <footer class="note">出席已入庫——教師端可一鍵匯出 attendance-book 格式。</footer>
+  </section>
+
+</div>
+
+<!-- 求救浮卡（他人漂流時出現） -->
+<div class="soscard" id="soscard">
+  <div class="t">⚠ 收到求救訊號</div>
+  <div class="w" id="sos-who"></div>
+  <button class="btn" id="sos-go">回應訊號・前往救援</button>
+</div>
+
+<!-- 救援答題彈窗 -->
+<div class="modal" id="rescue-modal">
+  <div class="box">
+    <p class="dim" style="margin:0;letter-spacing:.2em">救援程序・回答一題啟動牽引索</p>
+    <p class="q" id="rq" style="min-height:2.2em"></p>
+    <div class="ans" id="rans"></div>
+    <p class="toast" id="rtoast">&nbsp;</p>
+    <button class="btn ghost" id="rescue-cancel" style="margin-top:.6rem">取消</button>
+  </div>
+</div>
+
+<script>
+(function(){
+"use strict";
+var cv=document.getElementById('space'),cx=cv.getContext('2d');
+var reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+var W=0,H=0,DP=1;
+function makeNoise(sz,seed,mono){
+  var c=document.createElement('canvas');c.width=sz;c.height=sz;
+  var g=c.getContext('2d');var img=g.createImageData(sz,sz);var x=seed;
+  for(var i=0;i<img.data.length;i+=4){
+    x=(Math.imul(x,1664525)+1013904223)>>>0;var v=x>>>24;
+    img.data[i]=img.data[i+1]=img.data[i+2]=mono?255:v;
+    img.data[i+3]=mono?(v>>2):(40+(v>>2));
+  }
+  g.putImageData(img,0,0);return c;
+}
+var NOISE=makeNoise(256,41,false),GRAIN=makeNoise(256,97,true);
+var GLOW=(function(){
+  var c=document.createElement('canvas');c.width=64;c.height=64;
+  var g=c.getContext('2d');var gr=g.createRadialGradient(32,32,0,32,32,32);
+  gr.addColorStop(0,'rgba(255,252,244,.85)');gr.addColorStop(.35,'rgba(240,238,232,.28)');gr.addColorStop(1,'rgba(240,238,232,0)');
+  g.fillStyle=gr;g.fillRect(0,0,64,64);return c;
+})();
+function makeNebula(seed,hues,n,alpha){
+  var c=document.createElement('canvas');var s=900;c.width=s;c.height=s;
+  var g=c.getContext('2d');
+  var rnd=(function(x){return function(){x=(Math.imul(x,1664525)+1013904223)>>>0;return x/4294967296}})(seed);
+  for(var i=0;i<n;i++){
+    var px=rnd()*s,py=rnd()*s,pr=(rnd()*.22+.06)*s;
+    var hue=hues[Math.floor(rnd()*hues.length)];
+    var gr=g.createRadialGradient(px,py,0,px,py,pr);
+    gr.addColorStop(0,'rgba('+hue+','+(alpha*(rnd()*.5+.5))+')');gr.addColorStop(1,'rgba('+hue+',0)');
+    g.fillStyle=gr;g.beginPath();g.arc(px,py,pr,0,6.284);g.fill();
+  }
+  for(i=0;i<n*2;i++){
+    var fx=rnd()*s,fy=rnd()*s,fl=(rnd()*.18+.05)*s,fw=fl*(rnd()*.12+.05);
+    var fh=hues[Math.floor(rnd()*hues.length)];
+    g.save();g.translate(fx,fy);g.rotate(rnd()*6.284);
+    var fg=g.createRadialGradient(0,0,0,0,0,fl);
+    fg.addColorStop(0,'rgba('+fh+','+(alpha*.7*(rnd()*.5+.5))+')');fg.addColorStop(1,'rgba('+fh+',0)');
+    g.fillStyle=fg;g.beginPath();g.ellipse(0,0,fl,fw,0,0,6.284);g.fill();g.restore();
+  }
+  g.globalCompositeOperation='destination-out';
+  var ef=g.createLinearGradient(0,0,0,s*.24);
+  ef.addColorStop(0,'rgba(0,0,0,1)');ef.addColorStop(1,'rgba(0,0,0,0)');
+  g.fillStyle=ef;g.fillRect(0,0,s,s*.24);
+  g.globalCompositeOperation='source-over';
+  var bc=document.createElement('canvas');bc.width=s;bc.height=s;
+  var bg2=bc.getContext('2d');bg2.filter='blur(7px)';bg2.drawImage(c,0,0);bg2.filter='none';
+  return bc;
+}
+var nebFar=makeNebula(11,['38,54,122','56,42,112','28,38,84'],46,.12);
+var nebMid=makeNebula(77,['96,72,168','58,92,176','152,104,150'],36,.11);
+var nebNear=makeNebula(39,['214,152,176','226,206,148','112,92,186'],22,.085);
+var stars=[],NS=0;
+function seedStars(){
+  NS=Math.floor(W*H/3600);stars=[];
+  for(var i=0;i<NS;i++)stars.push(newStar(true));
+}
+function newStar(any){
+  var tint=Math.random();
+  return {x:(Math.random()*2-1)*1.3,y:(Math.random()*2-1)*1.3,
+    z:any?Math.random()*.95+.05:1,
+    c:tint<.78?'244,240,230':(tint<.9?'255,223,168':'178,197,244'),
+    m:Math.random()*.9+.35};
+}
+var speed=.06,targetSpeed=.06,mode='cruise';
+var CRUISE=.06,WARP=.9;
+function size(){
+  DP=Math.min(devicePixelRatio||1,2);
+  W=innerWidth;H=innerHeight;
+  cv.width=W*DP;cv.height=H*DP;
+  cv.style.width=W+'px';cv.style.height=H+'px';
+  cx.setTransform(DP,0,0,DP,0,0);
+  seedStars();
+}
+function drawAstrolabe(t){
+  var r=Math.min(W,H)*.46;
+  cx.save();cx.translate(W*.5,H*1.42);cx.rotate(reduce?0:t*.0000135);
+  cx.strokeStyle='rgba(199,162,75,.14)';cx.lineWidth=1;
+  cx.beginPath();cx.arc(0,0,r,0,6.284);cx.stroke();
+  cx.beginPath();cx.arc(0,0,r*.94,0,6.284);cx.stroke();
+  cx.strokeStyle='rgba(199,162,75,.20)';
+  for(var i=0;i<72;i++){
+    var a=i/72*6.284,l=i%6===0?r*.05:r*.022;
+    cx.beginPath();
+    cx.moveTo(Math.cos(a)*(r*.94),Math.sin(a)*(r*.94));
+    cx.lineTo(Math.cos(a)*(r*.94-l),Math.sin(a)*(r*.94-l));
+    cx.stroke();
+  }
+  cx.restore();
+}
+function frame(t){
+  targetSpeed=mode==='warp'?WARP:CRUISE;
+  speed+=(targetSpeed-speed)*.045;
+  var bg=cx.createLinearGradient(0,0,0,H);
+  bg.addColorStop(0,'#010208');bg.addColorStop(.5,'#03040D');bg.addColorStop(1,'#050712');
+  cx.fillStyle=bg;cx.fillRect(0,0,W,H);
+  var drift=t*.00001*(1+speed*2.2);
+  layer(nebFar,.9,drift*.4);layer(nebMid,1.15,drift*.8);layer(nebNear,1.5,drift*1.5);
+  drawAstrolabe(t);
+  var f=Math.min(W,H)*.9,cxp=W/2,cyp=H/2;
+  for(var i=0;i<stars.length;i++){
+    var s=stars[i];
+    if(!reduce)s.z-=speed*.016;
+    if(s.z<=.03){stars[i]=newStar(false);s=stars[i];}
+    var k=f/s.z,sx=cxp+s.x*k*.5,sy=cyp+s.y*k*.5;
+    if(sx<-40||sx>W+40||sy<-40||sy>H+40){stars[i]=newStar(false);continue;}
+    var r=Math.min(2.6,(1-s.z)*2.2)*s.m;
+    var a=Math.min(1,(1.05-s.z)*1.6)*s.m;
+    if(speed>.12){
+      var k2=f/(s.z+speed*.12);
+      var tx=cxp+s.x*k2*.5,ty=cyp+s.y*k2*.5;
+      var g2=cx.createLinearGradient(tx,ty,sx,sy);
+      g2.addColorStop(0,'rgba('+s.c+',0)');g2.addColorStop(1,'rgba('+s.c+','+a+')');
+      cx.strokeStyle=g2;cx.lineWidth=Math.max(r,.8);
+      cx.beginPath();cx.moveTo(tx,ty);cx.lineTo(sx,sy);cx.stroke();
+    }else{
+      if(s.m>1.08&&s.z<.5){
+        cx.globalAlpha=a*.55;var gw=r*9;
+        cx.drawImage(GLOW,sx-gw/2,sy-gw/2,gw,gw);cx.globalAlpha=1;
+      }
+      cx.fillStyle='rgba('+s.c+','+a+')';
+      cx.beginPath();cx.arc(sx,sy,r,0,6.284);cx.fill();
+    }
+  }
+  var vg=cx.createRadialGradient(W/2,H/2,Math.min(W,H)*.35,W/2,H/2,Math.max(W,H)*.75);
+  vg.addColorStop(0,'rgba(1,2,6,0)');vg.addColorStop(1,'rgba(1,2,6,.72)');
+  cx.fillStyle=vg;cx.fillRect(0,0,W,H);
+  cx.globalCompositeOperation='overlay';cx.globalAlpha=.035;
+  var gox=reduce?0:((t*.061)%256)|0,goy=reduce?0:((t*.047)%256)|0;
+  for(var gx2=-gox;gx2<W;gx2+=256)for(var gy2=-goy;gy2<H;gy2+=256)cx.drawImage(GRAIN,gx2,gy2);
+  cx.globalCompositeOperation='source-over';cx.globalAlpha=1;
+  if(!reduce)requestAnimationFrame(frame);
+  function layer(img,scale,off){
+    var s2=Math.max(W,H)*1.35*scale;
+    var ox=((off*90)%s2+s2)%s2;
+    cx.drawImage(img,-ox,H-s2*1.02,s2,s2);
+    cx.drawImage(img,s2-ox,H-s2*1.02,s2,s2);
+  }
+}
+window.__glimmerWarp=function(on){mode=on?'warp':'cruise'};
+addEventListener('resize',function(){size();if(reduce)frame(0)});
+size();
+reduce?frame(0):requestAnimationFrame(frame);
+})();
+</script>
+<script>
+(function(){
+"use strict";
+var $=function(id){return document.getElementById(id)};
+var reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ---------- 後端連線設定（雲端 Supabase 版） ----------
+   SB_ANON 為「公開金鑰」：設計上可嵌入前端，只能呼叫 g_* 函式，資料表 RLS 全鎖。
+   班級 token 走網址參數 ?c=（每班一條連結），無參數＝開發用測試艦隊。
+   錯誤映射：函式回 {error:...} → already_* 視為 409、其餘 400，對齊本機版行為。 */
+var SB_URL='https://aecudpweqsxanfpvsaui.supabase.co';
+var SB_ANON='sb_publishable_xQyNxCTeVz4JbHciFpe7aQ_poiG7mZE';
+var RPC={'/api/verify':'g_verify','/api/login':'g_login','/api/register':'g_register',
+         '/api/submit':'g_submit','/api/loot':'g_loot','/api/me':'g_me',
+         '/api/aggregate':'g_aggregate','/api/drifting':'g_drifting','/api/rescue':'g_rescue'};
+var TOKEN=new URLSearchParams(location.search).get('c')||'Js5O7SYjYM4';
+function api(path,body){
+  return fetch(SB_URL+'/rest/v1/rpc/'+RPC[path],{method:'POST',
+    headers:{'Content-Type':'application/json','apikey':SB_ANON,'Authorization':'Bearer '+SB_ANON},
+    body:JSON.stringify(Object.assign({class_token:TOKEN},body||{}))})
+    .then(function(r){return r.json().then(function(j){
+      var st=r.ok?200:r.status;
+      if(j&&j.error){st=/^already_/.test(j.error)?409:400;}
+      return {status:st,j:j};
+    })});
+}
+function apiGet(path,params){return api(path,params)}
+
+/* ---------- 舷窗框 ---------- */
+function portFrame(){
+  var s='<svg class="frame" viewBox="0 0 300 400" preserveAspectRatio="none">';
+  s+='<defs><linearGradient id="mt'+(++portFrame.n)+'" x1="0" y1="0" x2="1" y2="1">';
+  s+='<stop offset="0" stop-color="#E2E2DC"/><stop offset=".4" stop-color="#9A9CA0"/>';
+  s+='<stop offset=".7" stop-color="#6A6C72"/><stop offset="1" stop-color="#8E9094"/></linearGradient></defs>';
+  s+='<rect x="4" y="4" width="292" height="392" rx="40" ry="34" fill="none" stroke="url(#mt'+portFrame.n+')" stroke-width="17"/>';
+  s+='<rect x="13" y="13" width="274" height="374" rx="33" ry="28" fill="none" stroke="#2A2B33" stroke-width="3.5"/>';
+  s+='<rect x="2" y="2" width="296" height="396" rx="42" ry="36" fill="none" stroke="#3A3B42" stroke-width="2.5"/>';
+  var riv=[[36,22],[150,16],[264,22],[286,96],[290,200],[286,304],[264,378],[150,384],[36,378],[14,304],[10,200],[14,96]];
+  for(var i=0;i<riv.length;i++){
+    s+='<circle cx="'+riv[i][0]+'" cy="'+riv[i][1]+'" r="5.2" fill="#C9C9C3" stroke="#44454C" stroke-width="1.6"/>';
+    s+='<circle cx="'+(riv[i][0]-1.2)+'" cy="'+(riv[i][1]-1.2)+'" r="1.6" fill="#F2F2EC"/>';
+  }
+  s+='<path d="M44 40 Q100 24 150 26" stroke="rgba(255,255,255,.4)" stroke-width="6" fill="none" stroke-linecap="round"/>';
+  s+='</svg>';
+  return s;
+}
+portFrame.n=0;
+function portHTML(img,alt){
+  return '<div class="port"><img src="'+img+'" alt="'+(alt||'')+'">'+portFrame()+'</div>';
+}
+
+/* ---------- 壓測宇宙角色（教師指定六隻） ---------- */
+var CHARS=[
+  {img:'assets/char-dragon.webp',k:'dragon',name:'鬆獅蜥',  title:'曬星者',    flavor:'在任何一顆恆星底下，都能找到最舒服的角度。'},
+  {img:'assets/char-frog.webp',  k:'frog',  name:'藍老爺樹蛙',title:'雨林訊使',flavor:'能聽見星雲深處最細小的水聲。'},
+  {img:'assets/char-croc.webp',  k:'croc',  name:'鱷魚守宮', title:'夜壁行者',  flavor:'艙壁再滑，也沒有他站不住的地方。'},
+  {img:'assets/char-gecko.webp', k:'gecko', name:'豹紋守宮', title:'星斑收藏家',flavor:'尾巴儲存的能量，足夠撐過三次大靜默。'},
+  {img:'assets/char-cat.webp',   k:'cat',   name:'黑貓',     title:'雙瞳夜巡',  flavor:'一隻眼睛看航道，另一隻眼睛看著你。'},
+  {img:'assets/char-rabbit.webp',k:'rabbit',name:'兔子',     title:'躍遷測試員',flavor:'短距離躍遷的紀錄保持者——雖然常忘記目的地。'}
+];
+function charByKey(k){for(var i=0;i<CHARS.length;i++)if(CHARS[i].k===k)return CHARS[i];return CHARS[0];}
+var LUCKY_A=['微光','星塵','流星','暖訊','夜航','晨星','軌道','彗尾','極光','月蝕'];
+var LUCKY_B=['小隊長','觀測員','領航手','收訊員','修星師','擺渡人','巡邏員','點燈手'];
+var RE_GEN=/^[A-Z]\d{8}$/, RE_SP=/^[A-Z]\d{4}[A-Z]\d{3}$/;
+
+/* ---------- 寶物（v7：8 一般＋1 植物） ---------- */
+var RARC={junk:'#8B93A8',common:'#B8C4D8',uncommon:'#6FA8DC',rare:'#B07FE0',plant:'#8FC79A',o2:'#8FB5AE'};
+var TREASURES=[
+  {id:'glass', rar:'common',  rl:'常見', nm:'玻璃石',   img:'assets/t-glass.webp', fl:'艙窗外撿到的熔融玻璃，裡面凝著一小片星空。'},
+  {id:'pyrite',rar:'common',  rl:'常見', nm:'黃鐵礦',   img:'assets/t-pyrite.webp',fl:'人稱「愚人金」——但在星海裡，肯彎腰撿它的人不是愚人。'},
+  {id:'moon',  rar:'common',  rl:'常見', nm:'月岩樣本', img:'assets/t-moon.webp',  fl:'阿波羅任務的致敬。表面還留著登月靴的印。'},
+  {id:'quartz',rar:'uncommon',rl:'少見', nm:'黃水晶',   img:'assets/t-quartz.webp',fl:'折射出的光，和教室下午四點的陽光同一個顏色。'},
+  {id:'pall',  rar:'uncommon',rl:'少見', nm:'橄欖隕石', img:'assets/t-pall.webp',  fl:'真實存在的 Pallasite——剖面像一片星空玻璃。'},
+  {id:'ice',   rar:'uncommon',rl:'少見', nm:'彗核冰晶', img:'assets/t-ice.webp',   fl:'封存著太陽系誕生之初的水。'},
+  {id:'dust',  rar:'rare',    rl:'稀有', nm:'星塵結晶', img:'assets/t-dust.webp',  fl:'星雲採集的微光結晶，握著會有一點點暖。'},
+  {id:'shard', rar:'rare',    rl:'稀有', nm:'「第一道微光」碎片', img:'assets/t-shard.webp',fl:'與大靜默的起源有關。它在你掌心輕輕震動。'},
+  {id:'plant', rar:'plant',   rl:'最稀有・5%', nm:'高士佛赤楠', sub:'桃金孃科・台灣特有', img:'assets/t-plant.webp',
+   fl:'來自藍星恆春半島的在地植物——整個星系裡，只在你的校園生長。一人僅能獲得一次。'}
+];
+var O2ITEM={rl:'補給・5%',nm:'氧氣瓶',img:'assets/o2tank.webp',fl:'滿壓 300 BAR。深呼吸，繼續航行。'};
+var JUNK=[
+  {id:'j1',img:'assets/j1.webp',nm:'退役偵察衛星殘骸',fl:'服役 23 年，最後的訊號是一張自拍。'},
+  {id:'j2',img:'assets/j2.webp',nm:'斷裂的太陽能板陣列',fl:'還能發 3% 的電，大概夠亮一顆 LED。'},
+  {id:'j3',img:'assets/j3.webp',nm:'鏽蝕的望遠鏡艙體',fl:'據說拍過最美的星雲照。記憶卡不見了。'},
+  {id:'j4',img:'assets/j4.webp',nm:'失聯探測器設備艙',fl:'任務目標：尋找生命。找到你了。'},
+  {id:'j5',img:'assets/j5.webp',nm:'破裂的八角舷窗',fl:'窗後的風景，已經換過三個星系。'},
+  {id:'j6',img:'assets/j6.webp',nm:'燒毀的推進引擎',fl:'保固書上寫終身保固。公司已倒閉。'}
+];
+
+/* ---------- 題庫（壓測展示題） ---------- */
+var QS=[
+  {q:'多巴胺主導的是哪一種感覺？',a:['「想要」','「喜歡」','「睡意」'],c:0,
+   expl:'多巴胺是期待分子——主導「想要」，而非「喜歡」。',
+   wrong:'正解「想要」。分清「想要」和「喜歡」，是奪回注意力的第一步。'},
+  {q:'一個完整的睡眠週期大約是——',a:['90–110 分鐘','30 分鐘','8 小時'],c:0,
+   expl:'一晚通常會經歷 4–6 個睡眠週期。',
+   wrong:'正解 90–110 分鐘。用週期倍數設鬧鐘，起床比較不昏沉。'},
+  {q:'睡前喝酒，實際上會——',a:['讓睡眠碎片化、後半夜易醒','幫助一夜好眠','增加深層睡眠'],c:0,
+   expl:'「鎮靜」不等於「自然睡眠」——酒精會抑制 REM。',
+   wrong:'正解：睡眠碎片化。靠酒入睡，後半夜一直醒，情緒與專注都變差。'},
+  {q:'失眠的醫學定義是——',a:['一週超過 3 天、持續超過 3 個月','只要有一天睡不著','睡不滿 8 小時'],c:0,
+   expl:'偶爾睡不好不是失眠，別急著給自己貼標籤。',
+   wrong:'正解：一週 3 天、持續 3 個月。偶爾睡不好不是失眠；持續三個月請找專業協助。'}
+];
+/* 星軌連線題（名詞 ↔ 解釋；img 選填，有圖用圖沒圖純文字） */
+var PAIRS=[
+  {l:'下拉刷新',r:'製造「自己掌握」的錯覺',
+   hint:'下拉刷新＝「自己掌握」的錯覺——每次下拉都像拉霸。'},
+  {l:'隨機獎賞',r:'不確定何時出現，渴望更強烈',
+   hint:'隨機獎賞＝不知何時中獎，所以停不下來。'},
+  {l:'無限滾動',r:'沒有盡頭的無底洞設計',
+   hint:'無限滾動＝沒有停點，大腦不會喊停。'},
+  {l:'按讚機制',r:'把認同與比較變成數字',
+   hint:'按讚機制＝把自我價值交給數字。'}
+];
+/* 降落抉擇鏈（版本二・星球皮：一段連貫對話，接話→接住自責→給第一步） */
+var CHAIN=[
+  {q:'聽完這段話，你的第一句回應是——',
+   a:['「我也常常這樣欸。」','「那就把訊號盒關掉啊？」','「回過神來的時候，你是什麼感覺？」'],
+   fb:['自我揭露能拉近距離——不過先聽完對方，效果更好。','直接給解法，常讓對方覺得「沒被聽見」。','先問感受——這就是傾聽的起手式。']},
+  {q:'居民低下頭：「我是不是很沒用？連這種小事都管不住自己。」你會說——',
+   a:['「這不是你的問題——盒子裡每個設計，都是要讓人停不下來的。」','「會這樣想，表示你其實很想改變，對嗎？」','「別想那麼多啦，大家都嘛一樣。」'],
+   fb:['把問題歸還給「設計」，能卸下他的自責——這叫去羞愧化。','用提問幫他看見自己想改變的心——會談技巧的經典一步。','「大家都一樣」聽起來安慰，其實會讓人覺得困擾被淡化了。']},
+  {q:'居民抬起頭：「那……我今天晚上可以先做哪一件事？」',
+   a:['睡前一小時，把訊號盒放到房間外面','現在就關掉所有非必要通知','約朋友吃一頓「無訊號盒晚餐」'],
+   fb:['物理距離是最有效的數位界線。','關掉觸發源，渴望就少一半。','用真實的連結取代螢幕——最溫暖的解法。']}
+];
+var CHAIN_END=[
+  '那天晚上，居民睡得比三年來都沉。',
+  '訊號盒安靜下來的那一刻，他聽見了久違的風聲。',
+  '隔天黃昏，小屋前多了三張椅子和一鍋湯。'
+];
+/* 氣閘判讀（紅黃綠旗，壓測展示題） */
+var FLAGS=[
+  {t:'訊號 01：「我最近都靠喝酒才睡得著。」',ans:'r',
+   stu:'🚩 靠酒入睡會破壞睡眠結構，而且越喝越多。'},
+  {t:'訊號 02：「覺得撐不下去的時候，我會找人說。」',ans:'g',
+   stu:'✓ 會求助，是照顧自己的能力。'},
+  {t:'訊號 03：「成癮就是意志力不夠，想戒就能戒。」',ans:'r',
+   stu:'🚩 成癮是腦部疾病，不是意志力問題。'},
+  {t:'訊號 04：「我連續熬夜趕報告，白天靠能量飲撐。」',ans:'y',
+   stu:'⚠ 睡眠債會用情緒和專注力來討。'},
+  {t:'訊號 05：「心情不好去運動一下，好像真的有差。」',ans:'g',
+   stu:'✓ 運動是最便宜的情緒調節器。'},
+  {t:'訊號 06：「只是抽卡課金而已，怎麼可能成癮。」',ans:'r',
+   stu:'🚩 抽卡和賭博用同一套大腦機制。'}
+];
+var FLAG_LABELS={r:'紅旗',y:'黃旗',g:'綠旗'};
+var ACTS=['設定一段無手機時段','關閉非必要通知','睡前一小時不碰手機','本週安排一次運動'];
+var RQS=[
+  {q:'救援守則第一條：接近漂流者時應該——',a:['先穩住自己再伸手','全速衝過去','大聲呼喊'],c:0},
+  {q:'牽引索接觸的瞬間，會亮起什麼顏色的光？',a:['暖金色','血紅色','慘綠色'],c:0},
+  {q:'微笑大使說過：「永遠不會丟下——」',a:['任何人','貨櫃','零件'],c:0}
+];
+var DRIFTLOG=[
+  '對一顆路過的隕石點了點頭。它沒理我。',
+  '發現自轉比想像中好玩（目前第 47 圈）。',
+  '把求救訊號的鈴聲換成了輕快版。',
+  '幫漂過去的太陽能板取了名字：小板。',
+  '氧氣錶歸零，但幽默感是滿的。',
+  '剛剛好像看到微笑大使在遠處比了個讚。'
+];
+
+/* ---------- 狀態 ---------- */
+var state={sid:null,name:null,pick:null,nick:'',no:null,
+           o2:2,parts:0,dex:{},srvStamps:[],round:0,drifting:false};
+var O2ICON='assets/o2tank.webp';
+function show(id){
+  ['s-intro','s-id','s-pick','s-nick','s-card','s-brief','s-mission','s-match',
+   's-approach','s-chain','s-flags','s-weather','s-feedback','s-sum','s-crate','s-dex','s-drift','s-final']
+  .forEach(function(s){$(s).classList.toggle('on',s===id)});
+  scrollTo(0,0);
+}
+/* 圖片預載：進關前載齊當關素材，杜絕縮圖閃現 */
+function preload(list,cb){
+  var left=list.length;if(!left){cb();return;}
+  var done=false;
+  var t=setTimeout(function(){if(!done){done=true;cb();}},4000);
+  list.forEach(function(src){
+    var im=new Image();
+    im.onload=im.onerror=function(){
+      if(--left<=0&&!done){done=true;clearTimeout(t);cb();}
+    };
+    im.src=src;
+  });
+}
+function drawO2(){
+  ['o2a','o2b','o2c','o2d','o2e','o2f'].forEach(function(id){
+    var el=$(id);if(!el)return;
+    el.innerHTML='';
+    for(var i=0;i<5;i++){
+      var im=document.createElement('img');
+      im.src=O2ICON;im.alt=i<state.o2?'氧氣':'已耗盡';
+      if(i>=state.o2)im.className='empty';
+      el.appendChild(im);
+    }
+  });
+  var b=$('bag-o2');if(b)b.textContent=state.o2;
+}
+
+/* ---------- 登入 ---------- */
+var sidEl=$('sid'),sidMsg=$('sid-msg'),confirmBox=$('confirm-box');
+sidEl.addEventListener('input',function(){
+  var v=sidEl.value.toUpperCase().replace(/[^A-Z0-9]/g,'');
+  sidEl.value=v;confirmBox.hidden=true;sidMsg.className='msg';
+  if(v.length===0){sidMsg.textContent='格式：B＋8 碼數字，或專班 E＋4 碼＋字母＋3 碼';return;}
+  if(v.length<9){sidMsg.textContent='還差 '+(9-v.length)+' 碼';return;}
+  if(!RE_GEN.test(v)&&!RE_SP.test(v)){sidMsg.className='msg err';
+    sidMsg.textContent='學號格式不正確。範例：B11312056（一般）或 E1141A001（專班）';return;}
+  sidMsg.textContent='名單核對中…';
+  api('/api/verify',{sid:v}).then(function(res){
+    if(res.status===200){
+      state.sid=v;state.name=res.j.masked;
+      var hp=!!res.j.has_pilot;
+      sidMsg.className='msg ok';
+      sidMsg.textContent=hp?'核對成功':'找到了！請確認身分';
+      $('masked-name').textContent=res.j.masked;
+      $('pin-login').hidden=!hp;
+      $('confirm-q').hidden=hp;
+      $('yes-me').hidden=hp;
+      confirmBox.hidden=false;sidEl.blur();
+    }else if(res.j&&res.j.error==='not_in_roster'){
+      sidMsg.className='msg err';
+      sidMsg.textContent='此學號不在本班名單中。若你是後來加選的同學，請告訴老師後補登。';
+    }else{
+      sidMsg.className='msg err';
+      sidMsg.textContent='核對失敗（'+((res.j&&res.j.error)||res.status)+'）';
+    }
+  }).catch(function(){
+    sidMsg.className='msg err';
+    sidMsg.textContent='無法連線到測試後端——請先啟動 backend/server.py';
+  });
+});
+$('do-login').addEventListener('click',function(){
+  var pin=$('pin-in').value.trim();
+  if(!/^\d{4}$/.test(pin)){$('login-msg').className='msg err';$('login-msg').textContent='PIN 為 4 碼數字';return;}
+  api('/api/login',{sid:state.sid,pin:pin}).then(function(res){
+    if(res.status===200){
+      state.nick=res.j.nick;state.no=res.j.no;state.o2=res.j.o2;state.parts=res.j.parts;
+      state.pick=res.j.char;
+      try{localStorage.setItem('glimmer2-sid',state.sid)}catch(e){}
+      refreshMe().then(function(){renderCard();show('s-card');startPollers();});
+    }else if(res.j&&res.j.error==='bad_pin'){
+      $('login-msg').className='msg err';$('login-msg').textContent='PIN 不正確';
+    }else{
+      $('login-msg').className='msg err';$('login-msg').textContent='找回失敗（'+((res.j&&res.j.error)||res.status)+'）';
+    }
+  });
+});
+$('yes-me').addEventListener('click',function(){show('s-pick')});
+$('not-me').addEventListener('click',function(){
+  state.sid=null;state.name=null;sidEl.value='';confirmBox.hidden=true;
+  $('pin-login').hidden=true;$('confirm-q').hidden=false;$('yes-me').hidden=false;
+  sidMsg.className='msg';sidMsg.textContent='格式：B＋8 碼數字，或專班 E＋4 碼＋字母＋3 碼';sidEl.focus();
+});
+
+/* ---------- 選角 ---------- */
+var rosterEl=$('roster');
+CHARS.forEach(function(c,i){
+  var b=document.createElement('button');
+  b.type='button';b.className='pick';
+  b.innerHTML=portHTML(c.img,c.name)+'<b>'+c.name+'</b>';
+  b.addEventListener('click',function(){
+    state.pick=c.k;
+    document.querySelectorAll('.pick').forEach(function(p,j){p.classList.toggle('sel',j===i)});
+    $('picked-info').innerHTML='<b>'+c.name+'・'+c.title+'</b><br>'+c.flavor;
+    $('go-nick').disabled=false;
+  });
+  rosterEl.appendChild(b);
+});
+
+/* ---------- 代號與 PIN ---------- */
+var nickEl=$('nick'),pinSetEl=$('pin-set');
+function checkNick(){
+  var v=nickEl.value.trim();state.nick=v;
+  var pinOk=/^\d{4}$/.test(pinSetEl.value.trim());
+  $('go-card').disabled=!(v.length>=1&&v.length<=8&&pinOk);
+  $('nick-msg').textContent=v?(pinOk?('引航員「'+v+'」，聽起來不錯！'):'再設定 4 碼 PIN 就完成了'):' ';
+}
+nickEl.addEventListener('input',checkNick);
+pinSetEl.addEventListener('input',checkNick);
+$('lucky').addEventListener('click',function(){
+  nickEl.value=LUCKY_A[Math.floor(Math.random()*LUCKY_A.length)]+LUCKY_B[Math.floor(Math.random()*LUCKY_B.length)];
+  checkNick();
+});
+
+/* ---------- 導覽 ---------- */
+$('go-id').addEventListener('click',function(){show('s-id')});
+$('back-intro').addEventListener('click',function(){show('s-intro')});
+$('back-id').addEventListener('click',function(){show('s-id')});
+$('go-nick').addEventListener('click',function(){
+  var c=charByKey(state.pick);
+  $('stage').innerHTML=portHTML(c.img,c.name);
+  show('s-nick');
+});
+$('back-pick').addEventListener('click',function(){show('s-pick')});
+$('go-card').addEventListener('click',function(){
+  var pin=pinSetEl.value.trim();
+  $('go-card').disabled=true;
+  api('/api/register',{sid:state.sid,char:state.pick,nick:state.nick,pin:pin}).then(function(res){
+    if(res.status===200){
+      state.no=res.j.no;state.o2=res.j.o2||2;state.parts=0;
+      try{localStorage.setItem('glimmer2-sid',state.sid)}catch(e){}
+      startPollers();
+      if(window.__glimmerWarp){
+        window.__glimmerWarp(true);
+        setTimeout(function(){window.__glimmerWarp(false);renderCard();show('s-card');},1700);
+      }else{renderCard();show('s-card');}
+    }else{
+      $('go-card').disabled=false;
+      $('nick-msg').textContent='建角失敗：'+(res.j&&res.j.error==='already_registered'?'此學號已有角色，請回身分確認用 PIN 找回':((res.j&&res.j.error)||res.status));
+    }
+  }).catch(function(){
+    $('go-card').disabled=false;
+    $('nick-msg').textContent='無法連線到測試後端';
+  });
+});
+function doneWeeks(){
+  var w={};
+  state.srvStamps.forEach(function(s){
+    var m=/^star_w(\d+)$/.exec(s.stamp);if(m)w[+m[1]]=1;
+  });
+  return w;
+}
+function roundsDone(){
+  var w=doneWeeks();
+  return (w[1]?1:0)+(w[2]?1:0)+(w[3]?1:0)+(w[4]?1:0);
+}
+function feedbackDone(){return !!doneWeeks()[99];}
+function renderCard(){
+  var c=charByKey(state.pick);
+  $('card-photo').innerHTML=portHTML(c.img,c.name);
+  $('card-nick').textContent=state.nick;
+  $('card-role').textContent=c.name+'・'+c.title;
+  $('card-sid').textContent=state.sid;
+  $('card-name').textContent=state.name||'已驗證';
+  var n=roundsDone();
+  $('card-prog').textContent=n>=4?(feedbackDone()?'航行完成':'四輪完成——待回饋'):'已完成 '+n+'／4 輪';
+  $('pilot-no').textContent='NO. '+(state.no||'');
+  $('go-round').textContent=n>=4?(feedbackDone()?'前往航行結算':'填寫航行回饋'):'出發航行（第 '+(n+1)+' 輪）';
+  drawO2();
+}
+$('redo').addEventListener('click',function(){
+  try{localStorage.removeItem('glimmer2-sid')}catch(e){}
+  location.reload();
+});
+
+/* ---------- 四輪流程控制 ---------- */
+var BRIEFS=[
+  {no:'第 一 輪',title:'迷思隕石帶',say:'「前方隕石帶——這些是星霧凝結成的『迷思隕石』。三十秒一題，答對就擊碎它；答錯會擦撞，每顆擦撞都扣一瓶氧。」',btn:'進入隕石帶',
+   imgs:['assets/rock1.webp','assets/rock1b.webp','assets/rock2.webp','assets/rock2b.webp','assets/rock3.webp','assets/rock3b.webp']},
+  {no:'第 二 輪',title:'星軌連線・訊號干擾源',say:'「偵測到干擾源，它使用四種『成癮設計』。把每個名詞和它的運作方式接上星軌，就能解除干擾——安全任務，不扣氧。」',btn:'進入干擾區',imgs:[]},
+  {no:'第 三 輪',title:'星球登陸・氣象觀測',say:'「偵測到一顆溫暖星球，地表有生命訊號。記住引航員守則：先打招呼，再辦正事。安全任務，沒有標準答案，也不會扣氧。」',btn:'開始進場',
+   imgs:['assets/planet-demo.webp','assets/resident1.webp','assets/resident2.webp','assets/ground.webp']},
+  {no:'第 四 輪',title:'氣閘判讀',say:'「艦隊頻道收到六段訊號——有些是警訊，有些其實很健康。你的判讀，決定我們要不要回頭關心誰。安全任務，不扣氧。」',btn:'開啟氣閘',imgs:[]}
+];
+$('go-round').addEventListener('click',function(){
+  var n=roundsDone();
+  if(n>=4){
+    if(feedbackDone())openFinal();
+    else startFeedback();
+    return;
+  }
+  startRound(n+1);
+});
+function startRound(r){
+  state.round=r;
+  var b=BRIEFS[r-1];
+  $('brief-no').textContent=b.no;
+  $('brief-title').textContent=b.title;
+  $('brief-say').textContent=b.say;
+  $('go-task').textContent=b.btn;
+  $('go-task').disabled=true;
+  preload(b.imgs,function(){$('go-task').disabled=false;});
+  drawO2();show('s-brief');
+}
+$('go-task').addEventListener('click',function(){
+  if(state.round===1)startMission();
+  else if(state.round===2)startMatch();
+  else if(state.round===3)startChain();
+  else startFlags();
+});
+
+/* ---------- 共用：回合提交 ---------- */
+function submitRound(week,payload,o2lost,after){
+  api('/api/submit',{sid:state.sid,week:week,kind:'mission',o2lost:o2lost,payload:payload})
+  .then(function(res){
+    var note='';
+    if(res.status===200){state.o2=res.j.o2;}
+    else if(res.j&&res.j.error==='already_submitted'){note='（本輪已提交過，出席早已入庫）';}
+    else{note='（提交異常：'+((res.j&&res.j.error)||res.status)+'）';}
+    drawO2();
+    after(note);
+  }).catch(function(){after('（提交失敗——請確認後端運行中）');});
+}
+function maybeDrift(next){
+  if(state.o2<=0){enterDrift(next);}
+  else next();
+}
+
+/* ---------- R1 隕石帶 ---------- */
+var ROCKS=[
+  ['assets/rock1.webp','assets/rock1b.webp'],
+  ['assets/rock2.webp','assets/rock2b.webp'],
+  ['assets/rock3.webp','assets/rock3b.webp']
+];
+var qi=0,hits=0,timer=null,tstart=0,TLIMIT=30000,answered=false,o2Lost=0;
+function startMission(){
+  qi=0;hits=0;o2Lost=0;
+  show('s-mission');drawO2();
+  if(window.__glimmerWarp){window.__glimmerWarp(true);setTimeout(function(){window.__glimmerWarp(false)},1300);}
+  setTimeout(nextQ,reduce?0:500);
+}
+function nextQ(){
+  if(qi>=QS.length){endMission();return;}
+  answered=false;
+  var Q=QS[qi];
+  $('rock').className='rock live';
+  $('rock-img').src=ROCKS[qi%ROCKS.length][0];
+  $('qtext').textContent=Q.q;
+  $('toast').innerHTML='&nbsp;';
+  var ans=$('ans');ans.innerHTML='';
+  var order=[0,1,2].sort(function(){return Math.random()-.5});
+  order.forEach(function(oi){
+    var b=document.createElement('button');
+    b.textContent=Q.a[oi];
+    b.addEventListener('click',function(){pickAns(b,oi===Q.c)});
+    ans.appendChild(b);
+  });
+  tstart=performance.now();
+  $('tbar').style.width='100%';
+  clearInterval(timer);
+  timer=setInterval(function(){
+    var left=1-(performance.now()-tstart)/TLIMIT;
+    $('tbar').style.width=Math.max(0,left*100)+'%';
+    if(left<=0){clearInterval(timer);if(!answered)missQ(null);}
+  },100);
+}
+function pickAns(btn,ok){
+  if(answered)return;answered=true;clearInterval(timer);
+  document.querySelectorAll('#ans button').forEach(function(b){b.disabled=true});
+  if(ok){
+    btn.classList.add('ok');hits++;
+    /* 碎裂演出：先換碎裂圖＋白閃，再飛散消失 */
+    $('rock-img').src=ROCKS[qi%ROCKS.length][1];
+    $('flash').classList.remove('go');void $('flash').offsetWidth;$('flash').classList.add('go');
+    $('toast').textContent='命中！'+(QS[qi].expl||'');
+    setTimeout(function(){$('rock').className='rock gone'},reduce?60:420);
+    setTimeout(function(){qi++;nextQ()},reduce?300:2600);
+  }else missQ(btn);
+}
+function missQ(btn){
+  answered=true;clearInterval(timer);
+  if(btn)btn.classList.add('no');
+  document.querySelectorAll('#ans button').forEach(function(b){b.disabled=true});
+  $('rock').className='rock pass';
+  o2Lost++;
+  state.o2=Math.max(0,state.o2-1);drawO2();
+  $('toast').textContent='擦撞！氧氣 −1。'+(QS[qi].wrong||'');
+  setTimeout(function(){qi++;nextQ()},reduce?300:3400);
+}
+function endMission(){
+  submitRound(1,{hits:hits},o2Lost,function(note){
+    $('sum-title').textContent='穿越成功';
+    $('sum-line').textContent='擊碎 '+hits+'／'+QS.length+' 顆迷思隕石'+(o2Lost?('，氧氣消耗 '+o2Lost+' 瓶'):'，氧氣無損')+note;
+    maybeDrift(function(){show('s-sum')});
+  });
+}
+
+/* ---------- R2 星軌連線（v8 改版：左右欄＋金線） ---------- */
+var mSel=null,mWrong=0,mDone=0,mTimer=null,mStart=0,MLIMIT=60000,mLost=false,mEnded=false;
+var leftBtns=[],rightBtns=[];
+function startMatch(){
+  mSel=null;mWrong=0;mDone=0;mLost=false;mEnded=false;
+  leftBtns=[];rightBtns=[];
+  var L=PAIRS.map(function(p,i){return {p:p,g:i}}).sort(function(){return Math.random()-.5});
+  var R=PAIRS.map(function(p,i){return {p:p,g:i}}).sort(function(){return Math.random()-.5});
+  var el=$('linkcols');el.innerHTML='';
+  el.classList.remove('arm');
+  $('linksvg').innerHTML='';
+  $('linkwrap').classList.remove('allin');
+  for(var i=0;i<PAIRS.length;i++){
+    var lb=document.createElement('button');
+    lb.className='lcard'+(L[i].p.img?'':' noimg');
+    lb.innerHTML=(L[i].p.img?'<img src="'+L[i].p.img+'" alt="">':'')+'<span>'+L[i].p.l+'</span>';
+    lb.dataset.g=L[i].g;
+    lb.addEventListener('click',(function(b){return function(){tapLeft(b)}})(lb));
+    el.appendChild(lb);leftBtns.push(lb);
+    var rb=document.createElement('button');
+    rb.className='rcard';
+    rb.textContent=R[i].p.r;rb.dataset.g=R[i].g;
+    rb.addEventListener('click',(function(b){return function(){tapRight(b)}})(rb));
+    el.appendChild(rb);rightBtns.push(rb);
+  }
+  $('mtoast').innerHTML='&nbsp;';
+  show('s-match');drawO2();
+  mStart=performance.now();
+  clearInterval(mTimer);
+  mTimer=setInterval(function(){
+    var left=1-(performance.now()-mStart)/MLIMIT;
+    $('mbar').style.width=Math.max(0,left*100)+'%';
+    if(left<=0){clearInterval(mTimer);endMatch(true);}
+  },120);
+}
+/* 活線：點左卡後金線垂出、朝右欄輕擺；桌機游標可牽引 */
+var liveLine=null,liveRAF=0,livePt=null;
+function socketXY(b,side){
+  var wrap=$('linkwrap').getBoundingClientRect();
+  var r=b.getBoundingClientRect();
+  return [side==='L'?r.right-wrap.left:r.left-wrap.left, r.top+r.height/2-wrap.top];
+}
+function startLiveLine(b){
+  stopLiveLine();
+  var a=socketXY(b,'L');
+  liveLine=document.createElementNS('http://www.w3.org/2000/svg','line');
+  liveLine.setAttribute('class','gold');
+  liveLine.setAttribute('x1',a[0]);liveLine.setAttribute('y1',a[1]);
+  $('linksvg').appendChild(liveLine);
+  var t0=performance.now();
+  (function sway(t){
+    if(!liveLine)return;
+    if(livePt){
+      liveLine.setAttribute('x2',livePt[0]);liveLine.setAttribute('y2',livePt[1]);
+    }else{
+      var k=(t-t0)/1000;
+      liveLine.setAttribute('x2',a[0]+46+Math.sin(k*2.1)*7);
+      liveLine.setAttribute('y2',a[1]+26+Math.sin(k*3.3)*10);
+    }
+    liveRAF=requestAnimationFrame(sway);
+  })(t0);
+}
+function stopLiveLine(){
+  cancelAnimationFrame(liveRAF);
+  if(liveLine){liveLine.remove();liveLine=null;}
+  livePt=null;
+}
+$('linkwrap')&&$('linkwrap').addEventListener('pointermove',function(e){
+  if(!liveLine)return;
+  var wrap=$('linkwrap').getBoundingClientRect();
+  livePt=[e.clientX-wrap.left,e.clientY-wrap.top];
+});
+function tapLeft(b){
+  if(mEnded||b.classList.contains('done'))return;
+  if(mSel===b){
+    b.classList.remove('sel');mSel=null;
+    $('linkcols').classList.remove('arm');
+    stopLiveLine();return;
+  }
+  if(mSel)mSel.classList.remove('sel');
+  mSel=b;b.classList.add('sel');
+  $('linkcols').classList.add('arm');
+  startLiveLine(b);
+}
+function drawLink(a,b,cls){
+  var p1=socketXY(a,'L'),p2=socketXY(b,'R');
+  var ln=document.createElementNS('http://www.w3.org/2000/svg','line');
+  ln.setAttribute('x1',p1[0]);ln.setAttribute('y1',p1[1]);
+  ln.setAttribute('x2',p2[0]);ln.setAttribute('y2',p2[1]);
+  ln.setAttribute('class',cls);
+  $('linksvg').appendChild(ln);
+  if(cls==='bad')setTimeout(function(){ln.remove()},600);
+  return ln;
+}
+function tapRight(b){
+  if(mEnded||b.classList.contains('done'))return;
+  if(!mSel){return;}
+  var a=mSel;mSel=null;a.classList.remove('sel');
+  $('linkcols').classList.remove('arm');
+  stopLiveLine();
+  if(a.dataset.g===b.dataset.g){
+    drawLink(a,b,'gold');
+    a.classList.add('done');b.classList.add('done');
+    mDone++;
+    $('mtoast').textContent='星軌接合（'+mDone+'／'+PAIRS.length+'）';
+    if(mDone>=PAIRS.length){
+      clearInterval(mTimer);
+      $('linkwrap').classList.add('allin');
+      $('mtoast').textContent='四條星軌全亮——小星座點亮！';
+      setTimeout(function(){endMatch(false)},reduce?200:1400);
+    }
+  }else{
+    drawLink(a,b,'bad');
+    mWrong++;
+    [a,b].forEach(function(x){x.classList.add('shake');setTimeout(function(){x.classList.remove('shake')},320)});
+    $('mtoast').textContent=PAIRS[+a.dataset.g].hint;
+  }
+}
+function endMatch(timeout){
+  if(mEnded)return;mEnded=true;
+  stopLiveLine();
+  $('linkcols').classList.remove('arm');
+  submitRound(2,{pairs:mDone,wrong:mWrong,timeout:!!timeout},0,function(note){
+    $('sum-title').textContent=mDone>=PAIRS.length?'干擾源解除':'撤出干擾區';
+    $('sum-line').textContent='完成 '+mDone+'／'+PAIRS.length+' 組名詞接合——安全任務，氧氣無損'+note;
+    show('s-sum');
+  });
+}
+
+/* ---------- R3 降落抉擇鏈＋氣象 ---------- */
+var chainVals=[null,null,null],chainStep=0,actVal=null;
+/* 登陸過場：由遠拉近 → 居民探頭 → 揮手打招呼 → 任務簡報 */
+function startChain(){
+  $('appr-lead').textContent='進場中——抓穩了';
+  $('appr-res').className='resident';
+  $('appr-res-img').src='assets/resident1.webp';
+  $('appr-bubble').textContent='？';
+  $('appr-bubble').classList.remove('show');
+  $('appr-say').hidden=true;
+  $('appr-wave').hidden=true;
+  $('appr-start').hidden=true;
+  var ap=$('approach');
+  ap.classList.remove('go');ap.classList.remove('landed');ap.classList.remove('dive');
+  $('atmoflash').classList.remove('wash');
+  show('s-approach');
+  if(window.__glimmerWarp){window.__glimmerWarp(true);setTimeout(function(){window.__glimmerWarp(false)},reduce?0:2400);}
+  requestAnimationFrame(function(){requestAnimationFrame(function(){ap.classList.add('go')})});
+  setTimeout(function(){
+    $('appr-lead').textContent='抵達溫暖星球近軌道';
+  },reduce?30:2850);
+  setTimeout(function(){
+    ap.classList.add('dive');
+    $('atmoflash').classList.add('wash');
+    $('appr-lead').textContent='漸漸接近地表——';
+  },reduce?50:3900);
+  setTimeout(function(){
+    ap.classList.add('landed');
+    $('appr-lead').textContent='著陸・溫暖星球地表';
+  },reduce?80:5200);
+  setTimeout(function(){
+    $('appr-res').classList.add('in');
+    setTimeout(function(){
+      $('appr-bubble').classList.add('show');
+      $('appr-wave').hidden=false;
+    },reduce?50:700);
+  },reduce?120:6400);
+}
+$('appr-wave').addEventListener('click',function(){
+  $('appr-wave').hidden=true;
+  $('appr-res-img').src='assets/resident2.webp';
+  $('appr-res').classList.add('hop');
+  $('appr-bubble').textContent='！';
+  setTimeout(function(){
+    $('appr-bubble').classList.remove('show');
+    $('appr-lead').textContent='對方認得你是朋友了';
+    $('appr-say').hidden=false;
+    $('appr-start').hidden=false;
+  },reduce?100:1200);
+});
+$('appr-start').addEventListener('click',function(){
+  chainVals=[null,null,null];chainStep=0;
+  $('chain-log').hidden=true;
+  renderChainStep();
+  show('s-chain');
+});
+function renderChainStep(){
+  var s=chainStep,st=CHAIN[s];
+  var dots=$('chaindots').children;
+  for(var i=0;i<3;i++)dots[i].className=i<s?'past':(i===s?'on':'');
+  $('chain-q').textContent=st.q;
+  $('chain-fb').hidden=true;
+  $('chain-dist-box').hidden=true;
+  $('chain-next').hidden=true;
+  var el=$('chain-ans');el.innerHTML='';
+  st.a.forEach(function(t,i){
+    var b=document.createElement('button');
+    b.textContent=t;
+    b.addEventListener('click',function(){
+      if(chainVals[s]!==null)return;
+      chainVals[s]=i;b.classList.add('ok');
+      document.querySelectorAll('#chain-ans button').forEach(function(x){x.disabled=true});
+      $('chain-fb').textContent=(CHAIN[s].fb&&CHAIN[s].fb[i])||'';
+      $('chain-fb').hidden=false;
+      showChainDist(s);
+      scheduleChainRefresh(s);
+      $('chain-next').textContent=s<2?'下一步':'查看登陸日誌';
+      $('chain-next').hidden=false;
+    });
+    el.appendChild(b);
+  });
+}
+function showChainDist(s){
+  apiGet('/api/aggregate',{week:3,kind:'mission'}).then(function(res){
+    var f=(res.j&&res.j.fields)||{};
+    var src=f['c'+(s+1)]||{},agg={};
+    Object.keys(src).forEach(function(k2){agg[k2]=src[k2]});
+    agg[String(chainVals[s])]=(agg[String(chainVals[s])]||0)+1; /* 含自己這票（尚未提交） */
+    var items=CHAIN[s].a.map(function(t,i){
+      return {label:t.slice(0,9),n:agg[String(i)]||0,mine:i===chainVals[s]};
+    });
+    renderDist($('chain-dist'),items);
+    $('chain-dist-box').hidden=false;
+  }).catch(function(){});
+}
+$('chain-next').addEventListener('click',function(){
+  if(chainStep<2){chainStep++;renderChainStep();return;}
+  if(chainStep===2){
+    chainStep=3;
+    $('chain-ans').innerHTML='';
+    $('chain-q').textContent='降落完成——這是你的登陸紀錄。';
+    $('chain-dist-box').hidden=true;
+    var dots=$('chaindots').children;
+    for(var i=0;i<3;i++)dots[i].className='past';
+    var ol=$('chain-log-list');ol.innerHTML='';
+    chainVals.forEach(function(v,i){
+      var li=document.createElement('li');
+      li.textContent=CHAIN[i].a[v];
+      ol.appendChild(li);
+    });
+    $('chain-log-end').textContent=CHAIN_END[chainVals[2]]||CHAIN_END[0];
+    $('chain-log').hidden=false;
+    $('chain-next').textContent='前往氣象觀測站';
+    return;
+  }
+  goWeather();
+});
+/* 通用分布圖：由 0 長出的動畫條＋人數與百分比滾動＋標示你的選擇 */
+function renderDist(el,items){
+  var tot=0;items.forEach(function(it){tot+=it.n});
+  var rows=el.querySelectorAll('.row');
+  var sig=items.map(function(it){return it.label+(it.mine?'*':'')}).join('|');
+  var rebuild=rows.length!==items.length||el.dataset.sig!==sig;
+  el.dataset.sig=sig;
+  if(rebuild){
+    el.innerHTML='';
+    items.forEach(function(it){
+      el.insertAdjacentHTML('beforeend',
+        '<div class="row'+(it.mine?' mine':'')+'"><span class="lab">'+it.label+
+        (it.mine?'<span class="mytag">你的選擇</span>':'')+'</span>'+
+        '<span class="bar"><i></i></span><span class="n">0 人・0%</span></div>');
+    });
+    rows=el.querySelectorAll('.row');
+  }
+  items.forEach(function(it,i){
+    var pc=tot?Math.round(it.n/tot*100):0;
+    var bar=rows[i].querySelector('.bar i'),nEl=rows[i].querySelector('.n');
+    requestAnimationFrame(function(){requestAnimationFrame(function(){bar.style.width=pc+'%'})});
+    countUp(nEl,it.n,pc);
+  });
+}
+function countUp(el,n,pc){
+  if(reduce){el.textContent=n+' 人・'+pc+'%';return;}
+  var from=parseInt(el.textContent,10)||0;
+  if(from===n){el.textContent=n+' 人・'+pc+'%';return;}
+  var t0=performance.now(),dur=700;
+  (function step(t){
+    var k=Math.min(1,(t-t0)/dur);
+    var v=Math.round(from+(n-from)*k);
+    el.textContent=v+' 人・'+Math.round(pc*k)+'%';
+    if(k<1)requestAnimationFrame(step);
+    else el.textContent=n+' 人・'+pc+'%';
+  })(t0);
+}
+var distTimers=[];
+function scheduleChainRefresh(step){
+  distTimers.forEach(clearTimeout);distTimers=[];
+  [4000,9000].forEach(function(ms){
+    distTimers.push(setTimeout(function(){
+      if($('s-chain').classList.contains('on')&&chainStep===step&&chainVals[step]!==null)showChainDist(step);
+    },ms));
+  });
+}
+function goWeather(){
+  actVal=null;
+  $('submit-r3').disabled=true;
+  $('submit-r3').hidden=false;
+  $('weather-next').hidden=true;
+  $('weather-agg').hidden=true;
+  $('therm-box').hidden=false;
+  $('acts-box').hidden=false;
+  var el=$('acts');el.innerHTML='';
+  ACTS.forEach(function(t,i){
+    var b=document.createElement('button');
+    b.textContent=t;
+    b.addEventListener('click',function(){
+      actVal=i;
+      document.querySelectorAll('#acts button').forEach(function(x,j){x.classList.toggle('sel',j===i)});
+      $('submit-r3').disabled=false;
+    });
+    el.appendChild(b);
+  });
+  show('s-weather');
+}
+$('thermo').addEventListener('input',function(){$('deg').textContent=$('thermo').value});
+$('submit-r3').addEventListener('click',function(){
+  $('submit-r3').disabled=true;
+  var myW=+$('thermo').value, myA=actVal;
+  submitRound(3,{c1:chainVals[0],c2:chainVals[1],c3:chainVals[2],weather:myW,action:myA},false,function(note){
+    showWeatherAgg(myW,myA,note);
+  });
+});
+/* 全班氣象圖：送出後顯示聚合（提交已入庫，不再加自己那票） */
+function showWeatherAgg(myW,myA,note){
+  apiGet('/api/aggregate',{week:3,kind:'mission'}).then(function(res){
+    var j=res.j||{};
+    var wagg=j.weather||{},aagg=j.actions||{};
+    wagg[String(myW)]=wagg[String(myW)]||0; /* 保底顯示自己那格 */
+    var n=j.n||0,commits=0;
+    Object.keys(aagg).forEach(function(k2){commits+=aagg[k2]});
+    $('agg-headline').innerHTML='本週全班回報 <b>'+n+'</b> 筆氣象・承諾了 <b>'+commits+'</b> 個微行動';
+    $('weather-fb').textContent=myW<=2?'軌道穩定——也留意一下身邊軌道偏移的夥伴。':
+      (myW===3?'有點晃但還在航道上——今晚的微行動就是校正器。':
+       '軌道偏移不是失敗——察覺到它，就是校正的開始。若持續偏移，記得找人聊聊。');
+    var wItems=[1,2,3,4,5].map(function(v){
+      var lab=v===1?'1（穩定運行）':v===5?'5（嚴重偏移）':String(v);
+      return {label:lab,n:wagg[String(v)]||0,mine:v===myW};
+    });
+    renderDist($('weather-dist'),wItems);
+    var aItems=ACTS.map(function(t,i){
+      return {label:t.slice(0,9),n:aagg[String(i)]||0,mine:i===myA};
+    });
+    renderDist($('action-dist'),aItems);
+    $('therm-box').hidden=true;
+    $('acts-box').hidden=true;
+    $('weather-agg').hidden=false;
+    $('submit-r3').hidden=true;
+    $('weather-next').hidden=false;
+    $('weather-next').dataset.note=note||'';
+  }).catch(function(){
+    $('sum-title').textContent='觀測回報完成';
+    $('sum-line').textContent='登陸抉擇與氣象已匿名入庫'+(note||'');
+    show('s-sum');
+  });
+}
+$('weather-next').addEventListener('click',function(){
+  $('sum-title').textContent='觀測回報完成';
+  $('sum-line').textContent='登陸抉擇與氣象已匿名入庫'+($('weather-next').dataset.note||'');
+  show('s-sum');
+});
+
+/* ---------- R4 氣閘判讀（紅黃綠旗） ---------- */
+var flagIdx=0,flagVals={},flagBusy=false;
+function startFlags(){
+  flagIdx=0;flagVals={};flagBusy=false;
+  renderFlag();
+  show('s-flags');
+}
+function renderFlag(){
+  $('flagprog').textContent='訊號 '+(flagIdx+1)+'／'+FLAGS.length;
+  $('flagcard').textContent=FLAGS[flagIdx].t;
+  $('flag-fb').hidden=true;
+  $('flag-dist-box').hidden=true;
+  ['flag-r','flag-y','flag-g'].forEach(function(id){$(id).disabled=false});
+}
+function tapFlag(v){
+  if(flagBusy)return;flagBusy=true;
+  ['flag-r','flag-y','flag-g'].forEach(function(id){$(id).disabled=true});
+  var key='f'+(flagIdx+1);
+  flagVals[key]=v;
+  apiGet('/api/aggregate',{week:4,kind:'mission'}).then(function(res){
+    var f=(res.j&&res.j.fields)||{};
+    var src=f[key]||{},agg={};
+    Object.keys(src).forEach(function(k2){agg[k2]=src[k2]});
+    agg[v]=(agg[v]||0)+1;
+    var items=['r','y','g'].map(function(k2){
+      return {label:(k2==='r'?'🚩 紅旗':k2==='y'?'⚠ 黃旗':'✓ 綠旗'),n:agg[k2]||0,mine:k2===v};
+    });
+    renderDist($('flag-dist'),items);
+    $('flag-dist-box').hidden=false;
+  }).catch(function(){}).then(function(){
+    var f=FLAGS[flagIdx];
+    $('flag-fb').textContent=(v===f.ans?'':'再想想——')+f.stu;
+    $('flag-fb').hidden=false;
+    setTimeout(nextFlag,reduce?400:3200);
+  });
+}
+function nextFlag(){
+  flagBusy=false;
+  flagIdx++;
+  if(flagIdx<FLAGS.length){renderFlag();return;}
+  submitRound(4,flagVals,false,function(note){
+    $('sum-title').textContent='氣閘判讀完成';
+    $('sum-line').textContent='六筆訊號判讀已匿名入庫'+note;
+    show('s-sum');
+  });
+}
+$('flag-r').addEventListener('click',function(){tapFlag('r')});
+$('flag-y').addEventListener('click',function(){tapFlag('y')});
+$('flag-g').addEventListener('click',function(){tapFlag('g')});
+
+/* ---------- 遊戲回饋（結算前） ---------- */
+var FB_FAV=['隕石帶','星軌連線','星球登陸','氣閘判讀'];
+var FB_STUCK=['登入與建角','隕石帶','星軌連線','星球登陸','氣閘判讀','開箱與圖鑑','都很順，沒有卡'];
+var fb={fun:null,ease:null,fav:[],stuck:[]};
+function fbCheck(){
+  $('fb-submit').disabled=!(fb.fun&&fb.ease&&fb.fav.length&&fb.stuck.length);
+}
+function buildRate(id,key){
+  var el=$(id);el.innerHTML='';
+  for(var v=1;v<=5;v++){
+    (function(v2){
+      var b=document.createElement('button');
+      b.textContent=v2;
+      b.addEventListener('click',function(){
+        fb[key]=v2;
+        el.querySelectorAll('button').forEach(function(x,j){x.classList.toggle('sel',j===v2-1)});
+        fbCheck();
+      });
+      el.appendChild(b);
+    })(v);
+  }
+}
+function buildOpts(id,key,list){
+  /* 複選：點一下選取、再點取消 */
+  var el=$(id);el.innerHTML='';
+  list.forEach(function(t,i){
+    var b=document.createElement('button');
+    b.textContent=t;
+    b.addEventListener('click',function(){
+      var at=fb[key].indexOf(i);
+      if(at>=0)fb[key].splice(at,1);else fb[key].push(i);
+      b.classList.toggle('sel',at<0);
+      fbCheck();
+    });
+    el.appendChild(b);
+  });
+}
+function startFeedback(){
+  fb={fun:null,ease:null,fav:[],stuck:[]};
+  buildRate('fb-fun','fun');
+  buildRate('fb-ease','ease');
+  buildOpts('fb-fav','fav',FB_FAV);
+  buildOpts('fb-stuck','stuck',FB_STUCK);
+  $('fb-comment').value='';
+  $('fb-submit').disabled=true;
+  show('s-feedback');
+}
+$('fb-submit').addEventListener('click',function(){
+  $('fb-submit').disabled=true;
+  api('/api/submit',{sid:state.sid,week:99,kind:'feedback',
+    payload:{fun:fb.fun,ease:fb.ease,fav:fb.fav,stuck:fb.stuck,
+             comment:($('fb-comment').value||'').slice(0,200)}})
+  .then(function(){refreshMe().then(openFinal)})
+  .catch(function(){refreshMe().then(openFinal)});
+});
+
+/* ---------- 回合結束 → 開箱 ---------- */
+$('go-crate').addEventListener('click',function(){
+  document.querySelector('.crate-zone').hidden=false;
+  $('loot').hidden=true;
+  $('crate-hint').textContent='點擊貨櫃開啟';
+  $('bag-toast').innerHTML='&nbsp;';
+  $('crate-next').hidden=true;
+  $('parts').textContent=state.parts;
+  drawO2();
+  show('s-crate');
+});
+var opening=false;
+$('crate').addEventListener('click',function(){
+  if(opening||!$('loot').hidden)return;
+  opening=true;
+  $('crate-hint').textContent='開啟中…';
+  var c=$('crate');
+  c.classList.remove('shaking');void c.offsetWidth;c.classList.add('shaking');
+  var req=api('/api/loot',{sid:state.sid,week:state.round});
+  setTimeout(function(){
+    req.then(function(res){
+      opening=false;c.classList.remove('shaking');
+      if(res.status===409){$('crate-hint').textContent='本輪貨櫃已開過';afterCrate();return;}
+      if(res.status!==200){$('crate-hint').textContent='開箱失敗：'+((res.j&&res.j.error)||res.status);return;}
+      reveal(res.j);
+    }).catch(function(){
+      opening=false;c.classList.remove('shaking');
+      $('crate-hint').textContent='無法連線到測試後端';
+    });
+  },reduce?80:1100);
+});
+function reveal(j){
+  document.querySelector('.crate-zone').hidden=true;
+  $('crate-hint').textContent='貨櫃已開啟';
+  state.o2=j.o2;state.parts=j.parts;drawO2();
+  var loot=$('loot'),rar,rl,nm,fl,img,sub='';
+  if(j.kind==='junk'){
+    var jd=null;JUNK.forEach(function(x){if(x.id===j.item)jd=x});jd=jd||JUNK[0];
+    rar='junk';rl='太空垃圾・30%';nm=jd.nm;fl=jd.fl;img=jd.img;
+    $('bag-toast').textContent=j.exchanged?'回收零件集滿 3 件 → 兌換 1 瓶氧氣！':'垃圾自動分解為回收零件 ＋1';
+  }else if(j.kind==='o2'){
+    rar='o2';rl=O2ITEM.rl;nm=O2ITEM.nm;fl=O2ITEM.fl;img=O2ITEM.img;
+    $('bag-toast').textContent='氧氣 ＋1！';
+  }else{
+    var tr=null;TREASURES.forEach(function(x){if(x.id===j.item)tr=x});tr=tr||TREASURES[0];
+    rar=tr.rar;rl=tr.rar==='plant'?tr.rl:(tr.rl+'寶物');nm=tr.nm;fl=tr.fl;img=tr.img;sub=tr.sub||'';
+    if(j.kind==='dup'){
+      $('bag-toast').textContent=j.exchanged?'重複寶物轉零件，集滿 3 件 → 兌換 1 瓶氧氣！':'已擁有——自動轉回收零件 ＋1';
+    }else if(j.item==='plant'){
+      $('bag-toast').textContent='在地植物入手！全學期僅此一株。';
+    }else{
+      $('bag-toast').innerHTML='&nbsp;';
+    }
+  }
+  var col=RARC[rar];
+  loot.style.setProperty('--rar',col);loot.style.setProperty('--glow',col+'44');
+  $('parts').textContent=state.parts;
+  $('loot-rar').textContent=rl;
+  $('loot-art').innerHTML='<img src="'+img+'" alt="">';
+  $('loot-nm').textContent=nm;
+  $('loot-sub').textContent=sub;
+  $('loot-fl').textContent=fl;
+  loot.hidden=false;
+  afterCrate();
+}
+function afterCrate(){
+  var nx=$('crate-next');
+  nx.hidden=false;
+  nx.textContent=state.round>=4?'填寫航行回饋':'前往第 '+(state.round+1)+' 輪';
+}
+$('crate-next').addEventListener('click',function(){
+  refreshMe().then(function(){
+    if(state.round>=4){
+      if(feedbackDone())openFinal();
+      else startFeedback();
+    }
+    else startRound(state.round+1);
+  });
+});
+
+/* ---------- 圖鑑 ---------- */
+var dexFrom='s-card';
+function openDex(from){
+  dexFrom=from;
+  refreshMe().then(buildDex).catch(buildDex);
+}
+function buildDex(){
+  var tEl=$('dex-t');tEl.innerHTML='';
+  var total=TREASURES.length+JUNK.length,got=0;
+  TREASURES.forEach(function(tr){
+    var hit=state.dex[tr.id];if(hit)got++;
+    tEl.insertAdjacentHTML('beforeend',dexCell(tr.img,tr.nm+(tr.sub?'<br><span style="color:#8FC79A">'+tr.sub+'</span>':''),tr.rl,hit,RARC[tr.rar]));
+  });
+  var jEl=$('dex-j');jEl.innerHTML='';
+  JUNK.forEach(function(jx){
+    var hit=state.dex[jx.id];if(hit)got++;
+    jEl.insertAdjacentHTML('beforeend',dexCell(jx.img,jx.nm,'垃圾',hit,RARC.junk));
+  });
+  $('dex-pct').textContent='收集進度 '+got+'／'+total+'（'+Math.round(got/total*100)+'%）　・　戳章 '+state.srvStamps.length+' 枚';
+  show('s-dex');
+}
+function dexCell(img,nm,rl,hit,col){
+  return '<div class="cell'+(hit?' hit':'')+'" style="--rc:'+col+'">'
+    +'<div class="ic"><img src="'+img+'" class="'+(hit?'':'lock')+'" alt=""></div>'
+    +'<div class="nm2">'+(hit?nm:'？？？')+'</div>'
+    +'<div class="ct">'+(hit?('×'+hit.n+'・'+hit.d):rl)+'</div></div>';
+}
+$('go-dex1').addEventListener('click',function(){openDex('s-card')});
+$('go-dex2').addEventListener('click',function(){openDex('s-crate')});
+$('final-dex').addEventListener('click',function(){openDex('s-final')});
+$('back-from-dex').addEventListener('click',function(){
+  if(dexFrom==='s-card')renderCard();
+  show(dexFrom);
+});
+
+/* ---------- 漂流與救援（本人端） ---------- */
+var driftNext=null,logTimer=null,rescueShown=false;
+function enterDrift(next){
+  driftNext=next;
+  state.drifting=true;rescueShown=false;
+  var c=charByKey(state.pick);
+  $('drifter-img').src=c.img;
+  $('drifter').className='drifter spin';
+  $('rescuer').className='rescuer';
+  $('handglow').className='handglow';
+  $('drift-sos').classList.add('blink');
+  $('drift-toast').innerHTML='&nbsp;';
+  $('drift-continue').hidden=false;
+  var li=0;
+  $('driftlog').textContent='《漂流日誌》 '+DRIFTLOG[0];
+  clearInterval(logTimer);
+  logTimer=setInterval(function(){
+    li=(li+1)%DRIFTLOG.length;
+    $('driftlog').textContent='《漂流日誌》 '+DRIFTLOG[li];
+  },4200);
+  show('s-drift');
+}
+$('drift-continue').addEventListener('click',function(){
+  var n=driftNext;driftNext=null;
+  if(n)n();else{renderCard();show('s-card');}
+});
+function onRescued(by){
+  if(rescueShown)return;rescueShown=true;
+  state.drifting=false;
+  clearInterval(logTimer);
+  var onDrift=$('s-drift').classList.contains('on');
+  if(onDrift){
+    var rc=charByKey(by&&by.char);
+    $('rescuer-img').src=rc.img;
+    $('driftlog').textContent='雷達聲由遠而近——「抓緊囉！」';
+    setTimeout(function(){$('rescuer').classList.add('in')},reduce?0:200);
+    setTimeout(function(){
+      $('drifter').classList.remove('spin');
+      $('handglow').classList.add('go');
+      $('drift-sos').classList.remove('blink');
+      $('drift-sos').textContent='R E S C U E D';
+      $('driftlog').textContent='兩手相握——暖金色的光亮起。氧氣 ＋1。';
+      $('drift-toast').textContent=(by?('「'+by.nick+'」的'+charByKey(by.char).name):'夥伴')+'把你牽了回來。日誌蓋上「浴火歸航」戳章。';
+      $('drift-continue').hidden=false;
+    },reduce?100:1900);
+  }else{
+    toastAnywhere((by?('「'+by.nick+'」'):'夥伴')+'回應了你的求救訊號——氧氣 ＋1，浴火歸航！');
+  }
+  drawO2();
+}
+function toastAnywhere(t){
+  var el=$('sos-who');
+  $('soscard').classList.add('show');
+  $('sos-who').textContent=t;
+  $('sos-go').hidden=true;
+  setTimeout(function(){$('soscard').classList.remove('show');$('sos-go').hidden=false;},5200);
+}
+
+/* ---------- 救援（他人端） ---------- */
+var sosTarget=null,rescueBusy=false;
+function offerRescue(d){
+  if(state.drifting||rescueBusy)return;
+  sosTarget=d;
+  var c=charByKey(d.char);
+  $('sos-who').textContent='「'+d.nick+'」的'+c.name+'正在漂流，等待有人伸出手。';
+  $('sos-go').hidden=false;
+  $('soscard').classList.add('show');
+}
+$('sos-go').addEventListener('click',function(){
+  if(!sosTarget)return;
+  $('soscard').classList.remove('show');
+  var RQ=RQS[Math.floor(Math.random()*RQS.length)];
+  $('rq').textContent=RQ.q;
+  $('rtoast').innerHTML='&nbsp;';
+  var el=$('rans');el.innerHTML='';
+  var order=[0,1,2].sort(function(){return Math.random()-.5});
+  order.forEach(function(oi){
+    var b=document.createElement('button');
+    b.textContent=RQ.a[oi];
+    b.addEventListener('click',function(){
+      if(oi!==RQ.c){
+        b.classList.add('no');
+        $('rtoast').textContent='牽引索沒掛上——再想一下';
+        return;
+      }
+      b.classList.add('ok');
+      rescueBusy=true;
+      api('/api/rescue',{sid:state.sid,target_no:sosTarget.no}).then(function(res){
+        rescueBusy=false;
+        $('rescue-modal').classList.remove('on');
+        if(res.status===200){
+          toastAnywhere('救援成立！「'+res.j.target.nick+'」被你牽了回來——善行星章 ＋1');
+        }else if(res.j&&res.j.error==='already_rescued'){
+          toastAnywhere('夥伴已先一步趕到——心意已記錄在星圖上。');
+        }else{
+          toastAnywhere('救援失敗（'+((res.j&&res.j.error)||res.status)+'）');
+        }
+        sosTarget=null;
+      }).catch(function(){
+        rescueBusy=false;
+        $('rescue-modal').classList.remove('on');
+      });
+    });
+    el.appendChild(b);
+  });
+  $('rescue-modal').classList.add('on');
+});
+$('rescue-cancel').addEventListener('click',function(){
+  $('rescue-modal').classList.remove('on');sosTarget=null;
+});
+
+/* ---------- 輪詢：自身狀態＋漂流名單 ---------- */
+var lastRescueAt=null,pollersOn=false;
+function refreshMe(){
+  return apiGet('/api/me',{sid:state.sid}).then(function(res){
+    if(res.status!==200)return;
+    var j=res.j;
+    var prevO2=state.o2;
+    state.nick=j.nick;state.no=j.no;state.parts=j.parts;
+    state.pick=j.char;
+    var inv={};
+    (j.inventory||[]).forEach(function(r){inv[r.item]={n:r.n,d:r.first_date}});
+    state.dex=inv;state.srvStamps=j.stamps||[];
+    if(j.rescued_by&&j.rescued_by.at!==lastRescueAt&&state.drifting&&j.o2>0){
+      lastRescueAt=j.rescued_by.at;
+      state.o2=j.o2;
+      onRescued(j.rescued_by);
+    }else{
+      /* 隕石帶進行中：本地已預扣的氧氣不被輪詢蓋回（伺服器於提交時才入帳） */
+      state.o2=$('s-mission').classList.contains('on')?Math.max(0,j.o2-o2Lost):j.o2;
+      if(state.drifting&&j.o2>0){state.drifting=false;}
+    }
+    if(state.o2!==prevO2)drawO2();
+  });
+}
+function startPollers(){
+  if(pollersOn)return;pollersOn=true;
+  if(state.sid){
+    apiGet('/api/me',{sid:state.sid}).then(function(res){
+      if(res.status===200&&res.j.rescued_by)lastRescueAt=res.j.rescued_by.at;
+    });
+  }
+  setInterval(function(){
+    if(!state.sid)return;
+    refreshMe();
+  },5000);
+  setInterval(function(){
+    if(!state.sid||state.drifting)return;
+    apiGet('/api/drifting',{sid:state.sid}).then(function(res){
+      if(res.status!==200)return;
+      if(res.j.me_drifting){state.drifting=true;return;}
+      var d=res.j.drifting||[];
+      if(d.length&&!$('rescue-modal').classList.contains('on'))offerRescue(d[0]);
+      else if(!d.length&&!$('sos-go').hidden)$('soscard').classList.remove('show');
+    });
+  },8000);
+}
+
+/* ---------- 結算 ---------- */
+function openFinal(){
+  refreshMe().then(function(){
+    var w=doneWeeks();
+    var el=$('final-stamps');el.innerHTML='';
+    [1,2,3,4].forEach(function(i){
+      el.insertAdjacentHTML('beforeend',
+        '<span class="stamp'+(w[i]?'':' ')+'" style="'+(w[i]?'':'opacity:.3')+'">第'+'一二三四'[i-1]+'輪・星籤</span>');
+    });
+    var rescue=0,rescued=false;
+    state.srvStamps.forEach(function(s){
+      if(s.stamp==='rescue')rescue=s.n;
+      if(s.stamp==='rescued')rescued=true;
+    });
+    if(rescue)el.insertAdjacentHTML('beforeend','<span class="stamp green">善行星章 ×'+rescue+'</span>');
+    if(rescued)el.insertAdjacentHTML('beforeend','<span class="stamp red">浴火歸航</span>');
+    var titles=[];
+    var junkGot=JUNK.filter(function(j){return state.dex[j.id]}).length;
+    var tGot=TREASURES.filter(function(t){return state.dex[t.id]}).length;
+    if(junkGot>=JUNK.length)titles.push('星際環保戰士');
+    if(tGot>=TREASURES.length)titles.push('星海收藏家');
+    if(state.o2>=5)titles.push('完璧航行者');
+    if(rescued)titles.push('浴火歸航');
+    var tb=$('final-titles-box');
+    if(titles.length){
+      tb.hidden=false;
+      $('final-titles').innerHTML=titles.map(function(t){return '<span class="stamp">'+t+'</span>'}).join('');
+    }else tb.hidden=true;
+    $('final-line').textContent='引航員「'+state.nick+'」完成四輪壓測航行——寶物 '+tGot+'／9・垃圾 '+junkGot+'／6・氧氣 '+state.o2+'／5。回饋已收到，謝謝你！';
+    drawO2();
+    show('s-final');
+  });
+}
+$('final-card').addEventListener('click',function(){renderCard();show('s-card')});
+
+/* ---------- 啟動：以 sid 指標向後端還原 ---------- */
+drawO2();
+(function(){
+  var sid=null;try{sid=localStorage.getItem('glimmer2-sid')}catch(e){}
+  if(!sid)return;
+  apiGet('/api/me',{sid:sid}).then(function(res){
+    if(res.status!==200)return;
+    state.sid=sid;state.name='';state.nick=res.j.nick;state.no=res.j.no;
+    state.o2=res.j.o2;state.parts=res.j.parts;state.pick=res.j.char;
+    state.srvStamps=res.j.stamps||[];
+    var inv={};(res.j.inventory||[]).forEach(function(r){inv[r.item]={n:r.n,d:r.first_date}});
+    state.dex=inv;
+    if(res.j.rescued_by)lastRescueAt=res.j.rescued_by.at;
+    renderCard();show('s-card');startPollers();
+  });
+})();
+})();
+</script>
