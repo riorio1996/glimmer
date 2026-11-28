@@ -646,9 +646,24 @@ document.querySelectorAll('#qb-slots button').forEach(function(b){
   b.addEventListener('click',function(){
     qbSlot=b.dataset.slot;
     document.querySelectorAll('#qb-slots button').forEach(function(x){x.classList.toggle('on',x===b)});
+    qbAutoWeek();   // 切題型時：若本週無此題型內容，自動跳到有內容的週次
     qbRender();
   });
 });
+/* 本週沒有此題型、但別週有 → 自動切到最近有內容的週次 */
+function qbAutoWeek(){
+  if(qbFind())return;
+  var pack=qbCurrentPack(),lang=$('qb-lang').value,weeks=[];
+  QB.items.forEach(function(it){
+    if(it.pack===pack&&it.slot===qbSlot&&it.lang===lang)weeks.push(it.week);
+  });
+  if(weeks.length){
+    weeks.sort(function(a,b){return a-b});
+    $('qb-week').value=weeks[0];
+    $('qb-msg').className='msg ok';
+    $('qb-msg').textContent='此題型的內容在第 '+weeks[0]+' 週，已自動切換。';
+  }
+}
 $('qb-reload').onclick=qbLoad;
 $('qb-week').onchange=qbRender;
 $('qb-lang').onchange=qbRender;
