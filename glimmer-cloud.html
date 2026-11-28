@@ -1456,7 +1456,8 @@ $('go-task').addEventListener('click',function(){
 
 /* ---------- 共用：回合提交 ---------- */
 function submitRound(week,payload,o2lost,after){
-  api('/api/submit',{sid:state.sid,week:week,kind:'mission',o2lost:o2lost,payload:payload})
+  /* o2lost 必須是整數——雲端函式參數為 int，布林/undefined 會被 PostgREST 拒收(400) */
+  api('/api/submit',{sid:state.sid,week:week,kind:'mission',o2lost:(+o2lost||0),payload:payload})
   .then(function(res){
     var note='';
     if(res.status===200){state.o2=res.j.o2;}
