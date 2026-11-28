@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>本週小劇場・展示</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{margin:0;background:#06080F;color:#E9E4D7;overflow:hidden;
+  font-family:"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;line-height:1.7}
+#space{position:fixed;inset:0;z-index:0}
+.night{position:fixed;left:50%;top:40%;transform:translate(-50%,-50%);z-index:1;
+  width:130vmin;height:130vmin;border-radius:50%;pointer-events:none;
+  background:radial-gradient(circle,rgba(68,72,157,.16) 0%,rgba(20,24,60,.08) 42%,transparent 66%)}
+.moon{position:fixed;right:9%;top:9%;z-index:1;width:54px;height:54px;border-radius:50%;
+  background:#E9E4D7;opacity:.9;
+  box-shadow:0 0 34px rgba(233,228,215,.35), inset -14px -8px 0 2px #06080F}
+.app{position:relative;z-index:2;height:100dvh;max-width:430px;margin:0 auto;
+  display:flex;flex-direction:column;align-items:center;text-align:center;
+  padding:max(1rem,env(safe-area-inset-top)) 1.2rem calc(1rem + env(safe-area-inset-bottom))}
+.chip{font-size:.7rem;letter-spacing:.22em;color:#C7A24B;border:1px solid rgba(199,162,75,.45);
+  border-radius:999px;padding:.16rem .85rem}
+.eyebrow{margin-top:.8rem;font-size:.72rem;letter-spacing:.35em;color:#A9A694;text-indent:.35em}
+h1{font-size:1.3rem;letter-spacing:.32em;color:#F2EDE0;margin:.15rem 0 0;text-indent:.32em}
+/* 角色舞台 */
+.stage{flex:1;min-height:0;width:100%;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;position:relative}
+.chara{position:relative;animation:bob 5s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+.chara img{width:min(52vw,210px);filter:drop-shadow(0 16px 26px rgba(0,0,0,.6))}
+.halo{width:46%;height:13px;border-radius:50%;margin:-2px auto 0;
+  background:radial-gradient(ellipse,rgba(68,72,157,.55),transparent 70%);
+  animation:haloB 5s ease-in-out infinite}
+@keyframes haloB{0%,100%{transform:scale(1);opacity:.8}50%{transform:scale(.72);opacity:.4}}
+/* Zzz */
+.zzz{position:absolute;left:68%;top:6%;pointer-events:none}
+.zzz span{position:absolute;color:#8FA8DC;font-weight:800;opacity:0;
+  text-shadow:0 0 10px rgba(143,168,220,.4);animation:zrise 3.6s ease-out infinite}
+.zzz span:nth-child(1){font-size:1rem;animation-delay:0s}
+.zzz span:nth-child(2){font-size:1.3rem;left:14px;animation-delay:1.2s}
+.zzz span:nth-child(3){font-size:1.6rem;left:30px;animation-delay:2.4s}
+@keyframes zrise{0%{opacity:0;transform:translateY(8px) rotate(-6deg)}
+  18%{opacity:.95}100%{opacity:0;transform:translateY(-46px) rotate(10deg)}}
+/* 週記字幕（無框、宋體） */
+.who{margin-top:1rem;font-size:.72rem;letter-spacing:.3em;color:#C7A24B;text-indent:.3em}
+.say{margin:.35rem 0 0;font-size:1.1rem;line-height:1.95;color:#F2EDE0;
+  letter-spacing:.04em;text-wrap:balance;min-height:4.3em;
+  font-family:"Songti TC","Noto Serif TC",serif}
+.say.fade{animation:sayIn .6s ease}
+@keyframes sayIn{from{opacity:0;transform:translateY(8px)}to{opacity:1}}
+/* 按鈕 */
+.btn{display:block;width:100%;border:0;border-radius:999px;padding:.95rem 1rem;
+  font:inherit;font-size:1.02rem;font-weight:800;letter-spacing:.18em;text-indent:.18em;
+  color:#0C0F1C;background:#C7A24B;cursor:pointer}
+.btn:active{transform:translateY(1px)}
+.skip{margin-top:.55rem;color:#8E9094;font-size:.78rem;letter-spacing:.12em;
+  background:none;border:0;cursor:pointer;font-family:inherit}
+@media (prefers-reduced-motion: reduce){
+  .chara,.halo,.zzz span{animation:none}.zzz span{opacity:.7}.say.fade{animation:none}}
+</style>
+</head>
+<body>
+<canvas id="space"></canvas>
+<div class="night"></div>
+<div class="moon"></div>
+<div class="app">
+  <div class="chip">第 5 週・歡迎回來</div>
+  <div class="eyebrow">你 不 在 的 這 一 週</div>
+  <h1>本 週 小 劇 場</h1>
+
+  <div class="stage">
+    <div class="chara" id="chara">
+      <img id="chara-img" src="assets/med-cat.webp" alt="你的角色">
+      <div class="zzz" id="zzz"><span>Z</span><span>z</span><span>z</span></div>
+    </div>
+    <div class="halo"></div>
+    <div class="who" id="who">黑 貓 的 本 週 日 誌</div>
+    <p class="say fade" id="say">「補眠第三天。<br>夢到自己變成一顆溫暖星球，<br>醒來發現只是抱著氧氣瓶。」</p>
+  </div>
+
+  <button class="btn" id="wake">輕 輕 叫 醒 他</button>
+  <button class="skip" id="skip">直接進入登錄卡 →</button>
+</div>
+
+<script>
+(function(){
+"use strict";
+var $=function(id){return document.getElementById(id)};
+var reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+var cv=$('space'),cx=cv.getContext('2d'),stars=[];
+function size(){cv.width=innerWidth;cv.height=innerHeight;stars=[];
+  for(var i=0;i<110;i++)stars.push({x:Math.random()*cv.width,y:Math.random()*cv.height,
+    r:Math.random()*1.4+.3,p:Math.random()*Math.PI*2});}
+addEventListener('resize',size);size();
+(function frame(t){
+  cx.fillStyle='#06080F';cx.fillRect(0,0,cv.width,cv.height);
+  stars.forEach(function(s){var a=reduce?.45:(.22+.38*Math.abs(Math.sin(t/2300+s.p)));
+    cx.globalAlpha=a;cx.fillStyle='#E9E4D7';cx.beginPath();cx.arc(s.x,s.y,s.r,0,7);cx.fill()});
+  cx.globalAlpha=1;
+  if(!reduce)requestAnimationFrame(frame);
+})(0);
+
+function saySet(html){
+  var s=$('say');s.classList.remove('fade');void s.offsetWidth;
+  s.innerHTML=html;s.classList.add('fade');
+}
+var awake=false;
+$('wake').addEventListener('click',function(){
+  if(awake){alert('（展示到此為止——正式版此處進入登錄卡）');return}
+  awake=true;
+  $('zzz').style.display='none';
+  var img=$('chara-img');
+  img.style.transition='opacity .25s';img.style.opacity='0';
+  setTimeout(function(){
+    img.src='assets/char-cat.webp';
+    img.onload=function(){img.style.opacity='1'};
+    saySet('「喵。你回來啦——<br>本週航行，我已經準備好了。」');
+    $('who').textContent='黑 貓 醒 了';
+    $('wake').textContent='進 入 登 錄 卡';
+    $('skip').style.visibility='hidden';
+  },260);
+});
+$('skip').addEventListener('click',function(){
+  alert('（展示：可跳過設計——正式版直接進登錄卡，不強迫看小劇場）');
+});
+})();
+</script>
+</body>
+</html>
