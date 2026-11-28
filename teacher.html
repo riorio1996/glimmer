@@ -235,8 +235,8 @@ hr{border:0;border-top:1px solid rgba(199,162,75,.18);margin:.8rem 0}
       <input class="field hid" id="qb-pack-new" placeholder="新內容包名稱" style="width:9rem">
       <label class="inl">語系</label>
       <select class="field" id="qb-lang"><option value="zh">中文</option><option value="en">English</option></select>
-      <label class="inl">週次/回合</label>
-      <input class="field num" id="qb-week" type="number" min="1" max="99" value="1">
+      <label class="inl">週次</label>
+      <select class="field" id="qb-week"></select>
       <button class="btn ghost sm" id="qb-reload">↻ 重新載入</button>
     </div>
     <div class="slot-tabs" id="qb-slots">
@@ -664,6 +664,14 @@ function qbAutoWeek(){
     $('qb-msg').textContent='此題型的內容在第 '+weeks[0]+' 週，已自動切換。';
   }
 }
+/* 週次下拉 1–18 */
+(function(){
+  var s=$('qb-week');
+  for(var w=1;w<=18;w++){
+    var o=document.createElement('option');o.value=w;o.textContent='第 '+w+' 週';
+    s.appendChild(o);
+  }
+})();
 $('qb-reload').onclick=qbLoad;
 $('qb-week').onchange=qbRender;
 $('qb-lang').onchange=qbRender;
