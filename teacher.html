@@ -697,12 +697,59 @@ function el(tag,cls,html){var e=document.createElement(tag);if(cls)e.className=c
 function inp(cls,val,ph){var i=document.createElement('input');i.className=cls;i.value=val||'';if(ph)i.placeholder=ph;return i}
 function ta(val,ph,rows){var t=document.createElement('textarea');t.className='field';t.rows=rows||2;t.value=val||'';if(ph)t.placeholder=ph;return t}
 
+/* 已儲存版本的純文字預覽（對照用，編輯中不會變動） */
+function qbPreviewText(d){
+  var L=[];
+  if(qbSlot==='meteor'){
+    (d.questions||[]).forEach(function(q,i){
+      L.push('第 '+(i+1)+' 題：'+q.q);
+      (q.a||[]).forEach(function(o,oi){L.push('　'+(oi===q.c?'✔ ':'・ ')+o)});
+      if(q.expl)L.push('　答對解說：'+q.expl);
+      if(q.wrong)L.push('　答錯提示：'+q.wrong);
+      L.push('');
+    });
+  }else if(qbSlot==='link'){
+    (d.pairs||[]).forEach(function(p,i){
+      L.push((i+1)+'. '+p.l+'　↔　'+p.r);
+      if(p.hint)L.push('　連錯提示：'+p.hint);
+    });
+  }else if(qbSlot==='chain'){
+    (d.steps||[]).forEach(function(s,i){
+      L.push('第 '+(i+1)+' 步：'+s.q);
+      (s.a||[]).forEach(function(o,oi){L.push('　・ '+o+'　→ '+((s.fb||[])[oi]||''))});
+      L.push('');
+    });
+    (d.ends||[]).forEach(function(e,i){L.push('結語 '+(i+1)+'：'+e)});
+  }else if(qbSlot==='weather'){
+    (d.acts||[]).forEach(function(a,i){L.push((i+1)+'. '+a)});
+  }else{
+    var FL={r:'🚩紅旗',y:'⚠黃旗',g:'✓綠旗'};
+    (d.cards||[]).forEach(function(c,i){
+      L.push((i+1)+'. '+c.t+'　［'+(FL[c.ans]||c.ans)+'］');
+      if(c.stu)L.push('　判讀說明：'+c.stu);
+    });
+  }
+  return L.join('\n');
+}
 function qbRender(){
-  var data=qbFind()||qbTemplate();
+  var saved=qbFind();
+  var data=saved||qbTemplate();
   var box=$('qb-editor');box.innerHTML='';
   var head=el('div','dim');
-  head.textContent=SLOT_LABEL[qbSlot]+'｜內容包「'+(qbCurrentPack()||'—')+'」第 '+($('qb-week').value)+' 週（'+($('qb-lang').value==='zh'?'中文':'English')+'）'+(qbFind()?'・雲端已有內容':'・尚無內容（以下為空白模板）');
+  head.textContent=SLOT_LABEL[qbSlot]+'｜內容包「'+(qbCurrentPack()||'—')+'」第 '+($('qb-week').value)+' 週（'+($('qb-lang').value==='zh'?'中文':'English')+'）'+(saved?'・雲端已有內容':'・尚無內容（以下為空白模板）');
   box.appendChild(head);
+  if(saved){
+    var dt=document.createElement('details');dt.className='sec';
+    dt.innerHTML='<summary><span class="ico">📄</span>已儲存的版本（對照用——您在下方編輯時，這裡維持不變）</summary>'+
+      '<div class="bd"><pre style="font-family:inherit;line-height:1.7"></pre>'+
+      '<button class="btn ghost sm" id="qb-revert">↩ 放棄下方修改，還原成這個版本</button></div>';
+    dt.querySelector('pre').textContent=qbPreviewText(saved);
+    box.appendChild(dt);
+    dt.querySelector('#qb-revert').addEventListener('click',function(){
+      qbRender();
+      $('qb-msg').className='msg ok';$('qb-msg').textContent='已還原為已儲存的版本（尚未按儲存前，雲端本來就沒變）。';
+    });
+  }
 
   if(qbSlot==='meteor'){
     (data.questions||[]).forEach(function(qd,qi){
