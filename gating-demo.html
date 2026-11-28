@@ -9,107 +9,77 @@
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{height:100%}
 body{margin:0;background:#070A14;color:#E9E4D7;overflow:hidden;
-  font-family:"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;line-height:1.6}
+  font-family:"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;line-height:1.7}
 #space{position:fixed;inset:0;z-index:0}
-.app{position:relative;z-index:1;height:100dvh;max-width:430px;margin:0 auto;
-  display:flex;flex-direction:column;
-  padding:max(1rem,env(safe-area-inset-top)) 1.15rem calc(1rem + env(safe-area-inset-bottom))}
-h1{font-size:1.25rem;letter-spacing:.3em;color:#F2EDE0;text-align:center;margin:.2rem 0 .8rem;text-indent:.3em}
-/* 登錄卡 */
-.card{background:rgba(8,11,24,.78);border:1.5px solid rgba(199,162,75,.5);border-radius:16px;
-  padding:1rem 1.1rem;backdrop-filter:blur(4px)}
-.card .top{display:flex;justify-content:space-between;font-size:.68rem;letter-spacing:.22em;color:#C7A24B;margin-bottom:.6rem}
-.row{display:flex;gap:.9rem;align-items:center}
-.port{width:92px;flex:none;background:#06080F;border:3px solid #9A9CA0;border-radius:14px;
-  outline:2px solid #3A3B42;padding:4px}
-.port img{display:block;width:100%}
-.info b{display:block;font-size:1.25rem;color:#F2EDE0}
-.info .role{color:#C7A24B;font-size:.82rem;margin:.1rem 0 .35rem}
-.info .kv{font-size:.82rem;color:#A9A694}
-.info .kv span{color:#E9E4D7;margin-left:.4rem}
-/* 氧氣 */
-.o2{display:flex;justify-content:center;gap:.45rem;margin:.9rem 0 .2rem}
-.o2 img{width:26px;opacity:.95}
-.o2 img.dim{filter:grayscale(1) brightness(.5);opacity:.5}
-.o2cap{text-align:center;color:#A9A694;font-size:.75rem}
-/* 鵂鶹小語 */
-.owl{display:flex;gap:.7rem;align-items:flex-start;margin:1rem 0 .2rem}
-.owl img{width:52px;height:52px;border-radius:50%;border:2px solid #C7A24B;object-fit:cover;flex:none;background:#0C0F1C}
-.bubble{background:rgba(10,14,28,.92);border:1px solid rgba(199,162,75,.4);
-  border-radius:4px 14px 14px 14px;padding:.6rem .85rem;font-size:.9rem;line-height:1.75}
-.bubble .who{color:#C7A24B;font-size:.72rem;letter-spacing:.18em;margin-bottom:.15rem}
+.glow{position:fixed;left:50%;top:38%;transform:translate(-50%,-50%);z-index:1;
+  width:130vmin;height:130vmin;border-radius:50%;pointer-events:none;
+  background:radial-gradient(circle,rgba(199,162,75,.12) 0%,rgba(68,72,157,.06) 40%,transparent 66%)}
+.app{position:relative;z-index:2;height:100dvh;max-width:430px;margin:0 auto;
+  display:flex;flex-direction:column;align-items:center;text-align:center;
+  padding:max(1rem,env(safe-area-inset-top)) 1.2rem calc(1rem + env(safe-area-inset-bottom))}
+.chip{font-size:.7rem;letter-spacing:.22em;color:#C7A24B;border:1px solid rgba(199,162,75,.45);
+  border-radius:999px;padding:.16rem .85rem}
+/* 鵂鶹本尊 */
+.owl-stage{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%}
+.owl-stage img{width:min(58vw,235px);
+  filter:drop-shadow(0 18px 30px rgba(0,0,0,.6));
+  animation:hover 5s ease-in-out infinite}
+@keyframes hover{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+.owl-halo{width:40%;height:14px;border-radius:50%;margin-top:2px;
+  background:radial-gradient(ellipse,rgba(199,162,75,.45),transparent 70%);
+  animation:haloB 5s ease-in-out infinite}
+@keyframes haloB{0%,100%{transform:scale(1);opacity:.8}50%{transform:scale(.74);opacity:.4}}
+/* 台詞字幕（無框） */
+.who{margin-top:1rem;font-size:.72rem;letter-spacing:.35em;color:#C7A24B;text-indent:.35em}
+.say{margin:.35rem 0 0;font-size:1.12rem;line-height:1.9;color:#F2EDE0;
+  letter-spacing:.04em;text-wrap:balance;min-height:4.2em;
+  font-family:"Songti TC","Noto Serif TC",serif}
+.say.fade{animation:sayIn .6s ease}
+@keyframes sayIn{from{opacity:0;transform:translateY(8px)}to{opacity:1}}
 /* 出發按鈕 */
-.go{display:block;width:100%;border:0;border-radius:999px;padding:.95rem 1rem;margin-top:1rem;
+.go{display:block;width:100%;border:0;border-radius:999px;padding:.95rem 1rem;
   font:inherit;font-size:1.05rem;font-weight:800;letter-spacing:.18em;text-indent:.18em;
-  cursor:pointer;transition:background .5s,color .5s,box-shadow .5s}
-.go.locked{background:rgba(90,93,104,.35);color:#8E9094;border:1.5px solid rgba(142,144,148,.4);
+  cursor:pointer;transition:background .5s,color .5s}
+.go.locked{background:rgba(90,93,104,.32);color:#8E9094;border:1.5px solid rgba(142,144,148,.4);
   cursor:default;animation:wait 2.6s ease-in-out infinite}
 @keyframes wait{0%,100%{box-shadow:0 0 0 0 rgba(142,144,148,0)}
   50%{box-shadow:0 0 0 6px rgba(142,144,148,.12)}}
-.go.locked .lock{margin-right:.4rem}
-.go.open{background:#C7A24B;color:#0C0F1C;animation:ignite .7s cubic-bezier(.2,1.3,.4,1)}
+.go.open{background:#C7A24B;color:#0C0F1C;animation:ignite .7s cubic-bezier(.2,1.3,.4,1);
+  box-shadow:0 0 22px rgba(199,162,75,.4)}
 @keyframes ignite{0%{transform:scale(.96);box-shadow:0 0 0 0 rgba(199,162,75,.7)}
-  60%{transform:scale(1.03)}100%{transform:scale(1);box-shadow:0 0 26px rgba(199,162,75,.45)}}
-.go.open{box-shadow:0 0 22px rgba(199,162,75,.4)}
-/* 等待中雷達點點 */
-.dots{text-align:center;color:#8E9094;font-size:.78rem;letter-spacing:.2em;margin-top:.5rem;min-height:1.2em}
+  60%{transform:scale(1.03)}100%{transform:scale(1)}}
+.dots{color:#8E9094;font-size:.78rem;letter-spacing:.2em;margin-top:.55rem;min-height:1.2em}
 .dots i{font-style:normal;animation:blink 1.8s infinite}
 .dots i:nth-child(2){animation-delay:.3s}.dots i:nth-child(3){animation-delay:.6s}
 @keyframes blink{0%,100%{opacity:.2}50%{opacity:1}}
-.ghostbtns{display:flex;flex-direction:column;gap:.5rem;margin-top:.6rem}
-.ghost{display:block;width:100%;border-radius:999px;padding:.65rem;text-align:center;
-  border:1px solid rgba(199,162,75,.4);color:#C8C3B2;font-size:.9rem;letter-spacing:.15em}
 /* 模擬控制 */
-.simbar{margin-top:auto;text-align:center;padding-top:1rem}
-.simbar .note{font-size:.72rem;color:#A9A694;margin-bottom:.4rem;letter-spacing:.1em}
+.simbar{margin-top:.9rem;width:100%}
+.simbar .note{font-size:.7rem;color:#A9A694;margin-bottom:.35rem;letter-spacing:.1em}
 .simbtn{border:1px dashed rgba(143,199,154,.6);background:rgba(8,20,12,.6);color:#8FC79A;
-  border-radius:999px;padding:.55rem 1.4rem;font:inherit;font-size:.88rem;cursor:pointer;letter-spacing:.1em}
-@media (prefers-reduced-motion: reduce){.go.locked,.dots i{animation:none}.go.open{animation:none}}
+  border-radius:999px;padding:.5rem 1.3rem;font:inherit;font-size:.85rem;cursor:pointer;letter-spacing:.08em}
+@media (prefers-reduced-motion: reduce){
+  .owl-stage img,.owl-halo,.go.locked,.dots i{animation:none}
+  .go.open{animation:none}.say.fade{animation:none}}
 </style>
 </head>
 <body>
 <canvas id="space"></canvas>
+<div class="glow"></div>
 <div class="app">
-  <h1>引 航 員 登 錄 卡</h1>
+  <div class="chip">第 3 週・沉默星球｜待命中</div>
 
-  <div class="card">
-    <div class="top"><span>GLIMMER PILOT</span><span>NO. GL-DEMO</span></div>
-    <div class="row">
-      <div class="port"><img src="assets/char-cat.webp" alt="黑貓"></div>
-      <div class="info">
-        <b>示範引航員</b>
-        <div class="role">黑貓・雙瞳夜巡</div>
-        <div class="kv">本週<span>第 3 週・沉默星球</span></div>
-        <div class="kv">進度<span>已完成回合一</span></div>
-      </div>
-    </div>
-    <div class="o2">
-      <img src="assets/o2tank.webp"><img src="assets/o2tank.webp"><img src="assets/o2tank.webp">
-      <img src="assets/o2tank.webp" class="dim"><img src="assets/o2tank.webp" class="dim">
-    </div>
-    <div class="o2cap">氧氣存量 3／5</div>
+  <div class="owl-stage">
+    <img src="assets/npc-owlet.webp" alt="鵂鶹・指揮官">
+    <div class="owl-halo"></div>
+    <div class="who">鵂 鶹 ・ 指 揮 官</div>
+    <p class="say" id="say">「指揮官還在簡報——<br>先聽課，馬上就輪到你出場。」</p>
   </div>
 
-  <div class="owl">
-    <img src="assets/npc-owlet.webp" alt="鵂鶹">
-    <div class="bubble">
-      <div class="who">鵂鶹・指揮官</div>
-      <span id="owl-say">「指揮官還在簡報——先聽課，馬上就輪到你出場。」</span>
-    </div>
-  </div>
-
-  <button class="go locked" id="go" disabled>
-    <span class="lock">🔒</span><span id="go-txt">等待指揮官開放回合二</span>
-  </button>
+  <button class="go locked" id="go" disabled>🔒 等待指揮官開放回合二</button>
   <div class="dots" id="dots">與艦橋保持通訊中<i>・</i><i>・</i><i>・</i></div>
 
-  <div class="ghostbtns">
-    <div class="ghost">寶物圖鑑</div>
-    <div class="ghost">訊號接收器 📡</div>
-  </div>
-
   <div class="simbar">
-    <div class="note">—— 以下為展示用模擬器（正式版由艦橋遙控） ——</div>
+    <div class="note">—— 展示用模擬器（正式版由艦橋遙控） ——</div>
     <button class="simbtn" id="sim">模擬：指揮官按下「開放回合二」</button>
   </div>
 </div>
@@ -132,26 +102,27 @@ addEventListener('resize',size);size();
   if(!reduce)requestAnimationFrame(frame);
 })(0);
 
+function saySet(html){
+  var s=$('say');s.classList.remove('fade');void s.offsetWidth;
+  s.innerHTML=html;s.classList.add('fade');
+}
 var open=false;
 $('sim').addEventListener('click',function(){
   open=!open;
   var go=$('go');
   if(open){
     go.classList.remove('locked');go.classList.add('open');go.disabled=false;
-    go.innerHTML='出 發 航 行（回 合 二）';
-    $('owl-say').textContent='「回合二開放——引航員，出發！」';
+    go.textContent='出 發 航 行（回 合 二）';
+    saySet('「回合二開放——<br>引航員，出發！」');
     $('dots').textContent='';
     $('sim').textContent='模擬：指揮官關閉回合（回到等待）';
   }else{
     go.classList.remove('open');go.classList.add('locked');go.disabled=true;
-    go.innerHTML='<span class="lock">🔒</span><span id="go-txt">等待指揮官開放回合二</span>';
-    $('owl-say').textContent='「指揮官還在簡報——先聽課，馬上就輪到你出場。」';
+    go.innerHTML='🔒 等待指揮官開放回合二';
+    saySet('「指揮官還在簡報——<br>先聽課，馬上就輪到你出場。」');
     $('dots').innerHTML='與艦橋保持通訊中<i>・</i><i>・</i><i>・</i>';
     $('sim').textContent='模擬：指揮官按下「開放回合二」';
   }
-});
-$('go').addEventListener('click',function(){
-  if(open)alert('（展示頁到此為止——正式版此處進入回合二簡報）');
 });
 })();
 </script>
