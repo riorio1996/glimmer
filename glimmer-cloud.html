@@ -328,6 +328,14 @@
   .acts button{font:inherit;font-size:.88rem;font-weight:600;color:#E9E4D7;text-align:left;
     background:rgba(8,11,24,.78);border:1.5px solid rgba(199,162,75,.4);border-radius:12px;padding:.6rem .8rem;cursor:pointer}
   .acts button.sel{border-color:#C7A24B;box-shadow:0 0 0 2px rgba(199,162,75,.45)}
+  /* 回饋選項卡（v2：輪次＋白話描述＋縮圖，防名稱記憶偏誤） */
+  .acts button.fbopt{display:flex;align-items:center;gap:.6rem}
+  .fbopt .fbimg{width:38px;height:38px;flex:none;object-fit:contain;
+    filter:drop-shadow(0 1px 3px rgba(0,0,0,.5))}
+  .fbopt .fbemo{width:38px;height:38px;flex:none;display:flex;align-items:center;
+    justify-content:center;font-size:1.5rem}
+  .fbopt .fbtx b{display:block;font-size:.9rem}
+  .fbopt .fbtx i{display:block;font-style:normal;font-weight:400;font-size:.78rem;color:#A9A694;margin-top:.1rem}
   /* 貨櫃 */
   .crate-zone{display:flex;flex-direction:column;align-items:center;margin:.6rem 0 0}
   .crate{border:0;background:none;padding:0;cursor:pointer;width:min(272px,80%)}
@@ -1942,9 +1950,27 @@ $('flag-r').addEventListener('click',function(){tapFlag('r')});
 $('flag-y').addEventListener('click',function(){tapFlag('y')});
 $('flag-g').addEventListener('click',function(){tapFlag('g')});
 
-/* ---------- 遊戲回饋（結算前） ---------- */
-var FB_FAV=['隕石帶','星軌連線','星球登陸','氣閘判讀'];
-var FB_STUCK=['登入與建角','隕石帶','星軌連線','星球登陸','氣閘判讀','開箱與圖鑑','都很順，沒有卡'];
+/* ---------- 遊戲回饋（結算前）v2：防名稱記憶偏誤 ----------
+   每個選項＝輪次＋名稱＋白話描述＋縮圖（三重記憶線索）；
+   關卡選項順序隨機（抵消首位效應）；逃生選項固定在最後且互斥；
+   payload 改存穩定鍵值（非索引），隨機排序不影響資料。 */
+var FB_LEVELS=[
+  {k:'meteor',rd:'第 1 輪',nm:'迷思隕石帶',ds:'限時答題、答錯會扣氧的那關',img:'assets/rock1.webp'},
+  {k:'link',  rd:'第 2 輪',nm:'星軌連線',  ds:'左右配對、拉出金色線的那關',img:'assets/j1.webp'},
+  {k:'chain', rd:'第 3 輪',nm:'星球登陸',  ds:'降落星球、和蘑菇居民對話的那關',img:'assets/planet-demo.webp'},
+  {k:'flags', rd:'第 4 輪',nm:'氣閘判讀',  ds:'看訊號卡、點紅黃綠旗的那關',emo:'🚩'}
+];
+var FB_FAV_ESC={k:'blur',nm:'都差不多／印象模糊',ds:'記不清楚哪關是哪關也沒關係'};
+var FB_STUCK_EXTRA=[
+  {k:'login',nm:'登入與建角',ds:'輸學號、選角色、設 PIN 的過程',emo:'🛂'},
+  {k:'crate',nm:'開箱與圖鑑',ds:'開貨櫃、看寶物收藏的部分',img:'assets/crate.webp'}
+];
+var FB_STUCK_ESC={k:'none',nm:'都很順，沒有卡',ds:''};
+function shuffled(arr){
+  var a=arr.slice();
+  for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}
+  return a;
+}
 var fb={fun:null,ease:null,fav:[],stuck:[]};
 function fbCheck(){
   $('fb-submit').disabled=!(fb.fun&&fb.ease&&fb.fav.length&&fb.stuck.length);
@@ -1964,16 +1990,32 @@ function buildRate(id,key){
     })(v);
   }
 }
-function buildOpts(id,key,list){
-  /* 複選：點一下選取、再點取消 */
+function buildOpts(id,key,items,escKey){
+  /* 複選：點一下選取、再點取消；逃生選項（escKey）與其他互斥 */
   var el=$(id);el.innerHTML='';
-  list.forEach(function(t,i){
+  items.forEach(function(it){
     var b=document.createElement('button');
-    b.textContent=t;
+    b.className='fbopt';b.dataset.k=it.k;
+    var media=it.img?('<img class="fbimg" src="'+it.img+'" alt="">')
+                    :('<span class="fbemo">'+(it.emo||'✦')+'</span>');
+    b.innerHTML=media+'<span class="fbtx"><b></b><i></i></span>';
+    b.querySelector('b').textContent=(it.rd?it.rd+'・':'')+it.nm;
+    b.querySelector('i').textContent=it.ds||'';
+    if(!it.ds)b.querySelector('i').style.display='none';
     b.addEventListener('click',function(){
-      var at=fb[key].indexOf(i);
-      if(at>=0)fb[key].splice(at,1);else fb[key].push(i);
-      b.classList.toggle('sel',at<0);
+      var at=fb[key].indexOf(it.k);
+      if(at>=0){fb[key].splice(at,1);b.classList.remove('sel')}
+      else{
+        if(it.k===escKey){ // 逃生選項：清掉其他
+          fb[key]=[it.k];
+          el.querySelectorAll('button').forEach(function(x){x.classList.toggle('sel',x===b)});
+        }else{             // 一般選項：移除逃生選項
+          var ei=fb[key].indexOf(escKey);
+          if(ei>=0){fb[key].splice(ei,1);
+            el.querySelectorAll('button').forEach(function(x){if(x.dataset.k===escKey)x.classList.remove('sel')})}
+          fb[key].push(it.k);b.classList.add('sel');
+        }
+      }
       fbCheck();
     });
     el.appendChild(b);
@@ -1983,8 +2025,9 @@ function startFeedback(){
   fb={fun:null,ease:null,fav:[],stuck:[]};
   buildRate('fb-fun','fun');
   buildRate('fb-ease','ease');
-  buildOpts('fb-fav','fav',FB_FAV);
-  buildOpts('fb-stuck','stuck',FB_STUCK);
+  buildOpts('fb-fav','fav',shuffled(FB_LEVELS).concat([FB_FAV_ESC]),'blur');
+  buildOpts('fb-stuck','stuck',
+    [FB_STUCK_EXTRA[0]].concat(shuffled(FB_LEVELS)).concat([FB_STUCK_EXTRA[1],FB_STUCK_ESC]),'none');
   $('fb-comment').value='';
   $('fb-submit').disabled=true;
   show('s-feedback');
