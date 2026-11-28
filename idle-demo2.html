@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>本週小劇場・冥想特訓</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{margin:0;background:#070A14;color:#E9E4D7;overflow:hidden;
+  font-family:"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;line-height:1.7}
+#space{position:fixed;inset:0;z-index:0}
+.glow{position:fixed;left:50%;top:40%;transform:translate(-50%,-50%);z-index:1;
+  width:125vmin;height:125vmin;border-radius:50%;pointer-events:none;
+  background:radial-gradient(circle,rgba(143,199,154,.1) 0%,rgba(199,162,75,.06) 40%,transparent 66%)}
+.app{position:relative;z-index:2;height:100dvh;max-width:430px;margin:0 auto;
+  display:flex;flex-direction:column;align-items:center;text-align:center;
+  padding:max(1rem,env(safe-area-inset-top)) 1.2rem calc(1rem + env(safe-area-inset-bottom))}
+.chip{font-size:.7rem;letter-spacing:.22em;color:#C7A24B;border:1px solid rgba(199,162,75,.45);
+  border-radius:999px;padding:.16rem .85rem}
+.eyebrow{margin-top:.8rem;font-size:.72rem;letter-spacing:.35em;color:#A9A694;text-indent:.35em}
+h1{font-size:1.3rem;letter-spacing:.32em;color:#F2EDE0;margin:.15rem 0 0;text-indent:.32em}
+/* 舞台 */
+.stage{flex:1;min-height:0;width:100%;display:flex;flex-direction:column;
+  align-items:center;justify-content:flex-end;position:relative;padding-bottom:1.2rem}
+.chara{position:relative}
+.chara img{width:min(50vw,200px);display:block;
+  filter:drop-shadow(0 14px 24px rgba(0,0,0,.6))}
+/* 嘗試浮空（一直掉下去）循環 */
+.try{animation:tryfloat 6.8s ease-in-out infinite}
+@keyframes tryfloat{
+  0%{transform:translateY(0) rotate(0)}
+  9%{transform:translateY(-8px) rotate(-1.2deg)}
+  22%{transform:translateY(-30px) rotate(1.4deg)}
+  34%{transform:translateY(-46px) rotate(-2deg)}
+  42%{transform:translateY(-50px) rotate(3.2deg)}
+  47%{transform:translateY(-40px) rotate(-5deg)}
+  51%{transform:translateY(3px) rotate(1deg)}
+  54%{transform:translateY(0) rotate(0) scale(1.07,.9)}
+  58%{transform:translateY(-4px) scale(.98,1.03)}
+  62%{transform:translateY(0) scale(1)}
+  100%{transform:translateY(0)}
+}
+/* 成功浮空（彩蛋後） */
+.zen{animation:zenbob 4.5s ease-in-out infinite}
+@keyframes zenbob{0%,100%{transform:translateY(-26px)}50%{transform:translateY(-40px)}}
+/* 地面光暈 */
+.halo{width:150px;height:14px;border-radius:50%;margin:-2px auto 0;
+  background:radial-gradient(ellipse,rgba(143,199,154,.5),transparent 70%)}
+.try+ .halo{animation:haloTry 6.8s ease-in-out infinite}
+@keyframes haloTry{
+  0%,62%,100%{transform:scale(1);opacity:.85}
+  42%{transform:scale(.6);opacity:.35}
+  54%{transform:scale(1.25);opacity:1}
+}
+.zen+ .halo{background:radial-gradient(ellipse,rgba(199,162,75,.55),transparent 70%);
+  animation:haloZen 4.5s ease-in-out infinite}
+@keyframes haloZen{0%,100%{transform:scale(.8);opacity:.7}50%{transform:scale(.62);opacity:.45}}
+/* 咚！與汗滴 */
+.bonk{position:absolute;left:50%;bottom:4px;transform:translateX(-50%);
+  font-weight:900;color:#E0A75A;font-size:1.3rem;letter-spacing:.1em;
+  text-shadow:0 0 12px rgba(224,167,90,.5);opacity:0;pointer-events:none;
+  animation:bonkShow 6.8s ease-out infinite}
+@keyframes bonkShow{
+  0%,51%{opacity:0;transform:translateX(-50%) scale(.6)}
+  54%{opacity:1;transform:translateX(-50%) scale(1.15)}
+  58%{opacity:1}
+  66%,100%{opacity:0;transform:translateX(-50%) translateY(-14px) scale(1)}
+}
+.sweat{position:absolute;right:8%;top:16%;font-size:1.1rem;opacity:0;pointer-events:none;
+  animation:sweatShow 6.8s ease-out infinite}
+@keyframes sweatShow{
+  0%,42%{opacity:0}46%{opacity:.95}
+  52%,100%{opacity:0;transform:translateY(10px)}
+}
+/* 字幕 */
+.who{margin-top:.9rem;font-size:.72rem;letter-spacing:.3em;color:#C7A24B;text-indent:.3em}
+.say{margin:.35rem 0 0;font-size:1.08rem;line-height:1.95;color:#F2EDE0;
+  letter-spacing:.04em;text-wrap:balance;min-height:4.3em;
+  font-family:"Songti TC","Noto Serif TC",serif}
+.say.fade{animation:sayIn .6s ease}
+@keyframes sayIn{from{opacity:0;transform:translateY(8px)}to{opacity:1}}
+.btn{display:block;width:100%;border:0;border-radius:999px;padding:.95rem 1rem;
+  font:inherit;font-size:1.02rem;font-weight:800;letter-spacing:.18em;text-indent:.18em;
+  color:#0C0F1C;background:#C7A24B;cursor:pointer}
+.btn:active{transform:translateY(1px)}
+.skip{margin-top:.55rem;color:#8E9094;font-size:.78rem;letter-spacing:.12em;
+  background:none;border:0;cursor:pointer;font-family:inherit}
+@media (prefers-reduced-motion: reduce){
+  .try,.zen,.try+ .halo,.zen+ .halo,.bonk,.sweat{animation:none}
+  .bonk,.sweat{opacity:0}.say.fade{animation:none}}
+</style>
+</head>
+<body>
+<canvas id="space"></canvas>
+<div class="glow"></div>
+<div class="app">
+  <div class="chip">第 6 週・歡迎回來</div>
+  <div class="eyebrow">你 不 在 的 這 一 週</div>
+  <h1>本 週 小 劇 場</h1>
+
+  <div class="stage">
+    <div class="chara try" id="chara">
+      <img id="chara-img" src="assets/med-rabbit.webp" alt="兔子冥想中">
+      <span class="sweat" id="sweat">💦</span>
+    </div>
+    <div class="halo"></div>
+    <div class="bonk" id="bonk">咚！</div>
+    <div class="who" id="who">兔 子 的 本 週 日 誌</div>
+    <p class="say fade" id="say">「冥想特訓第四天。<br>教主說要心如止水——<br>可是我的水一直在跳。（最高紀錄：浮空 3 秒）」</p>
+  </div>
+
+  <button class="btn" id="cheer">替 他 打 氣</button>
+  <button class="skip" id="skip">直接進入登錄卡 →</button>
+</div>
+
+<script>
+(function(){
+"use strict";
+var $=function(id){return document.getElementById(id)};
+var reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+var cv=$('space'),cx=cv.getContext('2d'),stars=[];
+function size(){cv.width=innerWidth;cv.height=innerHeight;stars=[];
+  for(var i=0;i<110;i++)stars.push({x:Math.random()*cv.width,y:Math.random()*cv.height,
+    r:Math.random()*1.4+.3,p:Math.random()*Math.PI*2});}
+addEventListener('resize',size);size();
+(function frame(t){
+  cx.fillStyle='#070A14';cx.fillRect(0,0,cv.width,cv.height);
+  stars.forEach(function(s){var a=reduce?.5:(.26+.4*Math.abs(Math.sin(t/2100+s.p)));
+    cx.globalAlpha=a;cx.fillStyle='#E9E4D7';cx.beginPath();cx.arc(s.x,s.y,s.r,0,7);cx.fill()});
+  cx.globalAlpha=1;
+  if(!reduce)requestAnimationFrame(frame);
+})(0);
+
+function saySet(html){
+  var s=$('say');s.classList.remove('fade');void s.offsetWidth;
+  s.innerHTML=html;s.classList.add('fade');
+}
+var zen=false;
+$('cheer').addEventListener('click',function(){
+  if(zen){alert('（展示到此為止——正式版此處進入登錄卡）');return}
+  zen=true;
+  var c=$('chara');
+  c.classList.remove('try');c.classList.add('zen');
+  $('bonk').style.display='none';$('sweat').style.display='none';
+  saySet('「……浮起來了！<br>原來缺的不是定力，<br>是有人在旁邊看。」');
+  $('who').textContent='兔 子 浮 起 來 了';
+  $('cheer').textContent='進 入 登 錄 卡';
+  $('skip').style.visibility='hidden';
+});
+$('skip').addEventListener('click',function(){
+  alert('（展示：可跳過設計——正式版直接進登錄卡，不強迫看小劇場）');
+});
+})();
+</script>
+</body>
+</html>
