@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>本週小劇場・澆水時間</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{margin:0;background:#070A14;color:#E9E4D7;overflow:hidden;
+  font-family:"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;line-height:1.7}
+#space{position:fixed;inset:0;z-index:0}
+.glow{position:fixed;left:50%;top:42%;transform:translate(-50%,-50%);z-index:1;
+  width:125vmin;height:125vmin;border-radius:50%;pointer-events:none;
+  background:radial-gradient(circle,rgba(143,199,154,.13) 0%,rgba(62,107,69,.07) 40%,transparent 66%)}
+.app{position:relative;z-index:2;height:100dvh;max-width:430px;margin:0 auto;
+  display:flex;flex-direction:column;align-items:center;text-align:center;
+  padding:max(1rem,env(safe-area-inset-top)) 1.2rem calc(1rem + env(safe-area-inset-bottom))}
+.chip{font-size:.7rem;letter-spacing:.22em;color:#C7A24B;border:1px solid rgba(199,162,75,.45);
+  border-radius:999px;padding:.16rem .85rem}
+.eyebrow{margin-top:.8rem;font-size:.72rem;letter-spacing:.35em;color:#A9A694;text-indent:.35em}
+h1{font-size:1.3rem;letter-spacing:.32em;color:#F2EDE0;margin:.15rem 0 0;text-indent:.32em}
+/* 舞台：角色在右、植物在左 */
+.stage{flex:1;min-height:0;width:100%;display:flex;flex-direction:column;
+  align-items:center;justify-content:flex-end;position:relative;padding-bottom:1rem}
+.scene{position:relative;width:100%;max-width:360px;height:min(52vw,230px)}
+.chara{position:absolute;right:6%;bottom:0}
+.chara img{width:min(38vw,150px);display:block;
+  filter:drop-shadow(0 12px 20px rgba(0,0,0,.6));
+  animation:lean 4.6s ease-in-out infinite;transform-origin:50% 100%}
+@keyframes lean{0%,100%{transform:rotate(0)}50%{transform:rotate(-4deg)}}
+.plantbox{position:absolute;left:10%;bottom:0;width:min(30vw,118px)}
+.plantbox img{width:100%;display:block;transform-origin:50% 100%;
+  filter:drop-shadow(0 8px 16px rgba(0,0,0,.55));
+  animation:sway 4.6s ease-in-out infinite}
+@keyframes sway{0%,100%{transform:rotate(-1.6deg)}50%{transform:rotate(2deg) scale(1.015)}}
+.mound{width:120%;height:16px;margin:-6px 0 0 -10%;border-radius:50%;
+  background:radial-gradient(ellipse,rgba(143,199,154,.4),transparent 70%)}
+/* 水滴（循環） */
+.drops{position:absolute;left:18%;bottom:46%;width:70px;height:80px;pointer-events:none}
+.drops span{position:absolute;font-size:.95rem;opacity:0;animation:drop 2.3s linear infinite}
+.drops span:nth-child(1){left:6px;animation-delay:0s}
+.drops span:nth-child(2){left:28px;animation-delay:.7s}
+.drops span:nth-child(3){left:48px;animation-delay:1.4s}
+@keyframes drop{0%{opacity:0;transform:translateY(0)}12%{opacity:.95}
+  85%{opacity:.9}100%{opacity:0;transform:translateY(72px)}}
+/* 澆水彩蛋：亮晶晶 */
+.spark{position:absolute;left:8%;bottom:30%;width:120px;height:110px;pointer-events:none;display:none}
+.spark span{position:absolute;color:#FFE9A8;text-shadow:0 0 10px rgba(255,233,168,.8);
+  animation:tw 1.6s ease-in-out infinite;opacity:0}
+.spark span:nth-child(1){left:8px;top:48px;font-size:1rem}
+.spark span:nth-child(2){left:52px;top:10px;font-size:1.25rem;animation-delay:.4s}
+.spark span:nth-child(3){left:92px;top:58px;font-size:.9rem;animation-delay:.9s}
+@keyframes tw{0%,100%{opacity:0;transform:scale(.6)}50%{opacity:1;transform:scale(1.15)}}
+.grow .plantbox img{animation:happy .9s cubic-bezier(.2,1.3,.4,1) 1, sway 4.6s ease-in-out .9s infinite}
+@keyframes happy{0%{transform:scale(1)}45%{transform:scale(1.12) rotate(2deg)}100%{transform:scale(1.04)}}
+/* 字幕 */
+.who{margin-top:.6rem;font-size:.72rem;letter-spacing:.3em;color:#C7A24B;text-indent:.3em}
+.say{margin:.35rem 0 0;font-size:1.08rem;line-height:1.95;color:#F2EDE0;
+  letter-spacing:.04em;text-wrap:balance;min-height:4.3em;
+  font-family:"Songti TC","Noto Serif TC",serif}
+.say.fade{animation:sayIn .6s ease}
+@keyframes sayIn{from{opacity:0;transform:translateY(8px)}to{opacity:1}}
+.btn{display:block;width:100%;border:0;border-radius:999px;padding:.95rem 1rem;
+  font:inherit;font-size:1.02rem;font-weight:800;letter-spacing:.18em;text-indent:.18em;
+  color:#0C0F1C;background:#C7A24B;cursor:pointer}
+.btn:active{transform:translateY(1px)}
+.skip{margin-top:.55rem;color:#8E9094;font-size:.78rem;letter-spacing:.12em;
+  background:none;border:0;cursor:pointer;font-family:inherit}
+@media (prefers-reduced-motion: reduce){
+  .chara img,.plantbox img,.drops span,.spark span{animation:none}
+  .drops span{opacity:.6}.say.fade{animation:none}}
+</style>
+</head>
+<body>
+<canvas id="space"></canvas>
+<div class="glow"></div>
+<div class="app">
+  <div class="chip">第 7 週・歡迎回來</div>
+  <div class="eyebrow">你 不 在 的 這 一 週</div>
+  <h1>本 週 小 劇 場</h1>
+
+  <div class="stage">
+    <div class="scene" id="scene">
+      <div class="plantbox">
+        <img src="assets/t-plant.webp" alt="高士佛赤楠">
+        <div class="mound"></div>
+      </div>
+      <div class="drops" id="drops"><span>💧</span><span>💧</span><span>💧</span></div>
+      <div class="spark" id="spark"><span>✦</span><span>✧</span><span>✦</span></div>
+      <div class="chara"><img src="assets/char-gecko.webp" alt="豹紋守宮"></div>
+    </div>
+    <div class="who" id="who">豹 紋 守 宮 的 本 週 日 誌</div>
+    <p class="say fade" id="say">「聽說植物聽得懂讚美。<br>這週對高士佛赤楠說了三次『你超棒』——<br>它好像真的挺直了一點。」</p>
+  </div>
+
+  <button class="btn" id="water">一 起 澆 一 次 水</button>
+  <button class="skip" id="skip">直接進入登錄卡 →</button>
+</div>
+
+<script>
+(function(){
+"use strict";
+var $=function(id){return document.getElementById(id)};
+var reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+var cv=$('space'),cx=cv.getContext('2d'),stars=[];
+function size(){cv.width=innerWidth;cv.height=innerHeight;stars=[];
+  for(var i=0;i<110;i++)stars.push({x:Math.random()*cv.width,y:Math.random()*cv.height,
+    r:Math.random()*1.4+.3,p:Math.random()*Math.PI*2});}
+addEventListener('resize',size);size();
+(function frame(t){
+  cx.fillStyle='#070A14';cx.fillRect(0,0,cv.width,cv.height);
+  stars.forEach(function(s){var a=reduce?.5:(.26+.4*Math.abs(Math.sin(t/2100+s.p)));
+    cx.globalAlpha=a;cx.fillStyle='#E9E4D7';cx.beginPath();cx.arc(s.x,s.y,s.r,0,7);cx.fill()});
+  cx.globalAlpha=1;
+  if(!reduce)requestAnimationFrame(frame);
+})(0);
+
+function saySet(html){
+  var s=$('say');s.classList.remove('fade');void s.offsetWidth;
+  s.innerHTML=html;s.classList.add('fade');
+}
+var watered=false;
+$('water').addEventListener('click',function(){
+  if(watered){alert('（展示到此為止——正式版此處進入登錄卡）');return}
+  watered=true;
+  $('scene').classList.add('grow');
+  $('spark').style.display='block';
+  saySet('「葉子為你晃了晃——<br>整個星系只在你的校園生長的它，<br>也記得你回來的日子。」');
+  $('who').textContent='高 士 佛 赤 楠 很 開 心';
+  $('water').textContent='進 入 登 錄 卡';
+  $('skip').style.visibility='hidden';
+});
+$('skip').addEventListener('click',function(){
+  alert('（展示：可跳過設計——正式版直接進登錄卡，不強迫看小劇場）');
+});
+})();
+</script>
+</body>
+</html>
